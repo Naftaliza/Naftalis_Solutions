@@ -33,13 +33,13 @@ const AboutPage = () => {
       </Helmet>
 
       <div className="space-y-24" dir={language === 'he' ? 'rtl' : 'ltr'}>
-        <motion.section 
+        <motion.section
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
           className="text-center py-20"
         >
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -47,7 +47,7 @@ const AboutPage = () => {
           >
             {t.hero.title1} <span className="gradient-text">{t.hero.title2}</span>
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -58,13 +58,13 @@ const AboutPage = () => {
         </motion.section>
 
         <section className="flex flex-col md:flex-row items-center gap-12 bg-slate-100 p-12 rounded-2xl">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             className="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden shadow-2xl flex-shrink-0"
           >
-            <img alt={t.founder.alt} className="w-full h-full object-cover" src="https://media.licdn.com/dms/image/v2/D4D03AQGUB9XAMpO7Sg/profile-displayphoto-scale_200_200/B4DZhFw4K6H4AY-/0/1753517099229?e=1762992000&v=beta&t=dKzcXL4Ca2f2veAlpuqqoJr9LwYJ4Ze9Pk2alQkw0-Y" />
+            <img alt={t.founder.alt} className="w-full h-full object-cover" src="src\img\1753517099229.jpg" />
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 50 }}
@@ -85,19 +85,19 @@ const AboutPage = () => {
           <div className="w-24 h-1.5 bg-teal-500 mx-auto mt-6 rounded-full"></div>
 
           <div className="grid md:grid-cols-3 gap-10 mt-16">
-            <ValueCard 
+            <ValueCard
               icon={<Users size={32} />}
               title={t.values.cards.customer.title}
               description={t.values.cards.customer.description}
               delay={0.2}
             />
-            <ValueCard 
+            <ValueCard
               icon={<Zap size={32} />}
               title={t.values.cards.simplicity.title}
               description={t.values.cards.simplicity.description}
               delay={0.4}
             />
-            <ValueCard 
+            <ValueCard
               icon={<Target size={32} />}
               title={t.values.cards.impact.title}
               description={t.values.cards.impact.description}
