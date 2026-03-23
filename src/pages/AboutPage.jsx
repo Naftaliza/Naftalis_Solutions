@@ -5,6 +5,7 @@ import { Target, Zap, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { LanguageContext } from '@/context/LanguageContext';
+import founderImg from '@/img/1753517099229.jpg';
 
 const ValueCard = ({ icon, title, description, delay }) => (
   <motion.div
@@ -64,7 +65,7 @@ const AboutPage = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden shadow-2xl flex-shrink-0"
           >
-            <img alt={t.founder.alt} className="w-full h-full object-cover" src="src\img\1753517099229.jpg" />
+            <img alt={t.founder.alt} className="w-full h-full object-cover" src={founderImg} />
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 50 }}
