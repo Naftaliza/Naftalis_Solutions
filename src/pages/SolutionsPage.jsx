@@ -38,17 +38,17 @@ const SolutionsPage = () => {
   
   const solutions = [
     {
-      icon: <Calendar size={32} />,
+      icon: <Calendar size={32} aria-hidden="true" />,
       title: t.cards.scheduling.title,
       description: t.cards.scheduling.description,
     },
     {
-      icon: <MessageCircle size={32} />,
+      icon: <MessageCircle size={32} aria-hidden="true" />,
       title: t.cards.whatsapp.title,
       description: t.cards.whatsapp.description,
     },
     {
-      icon: <BarChart2 size={32} />,
+      icon: <BarChart2 size={32} aria-hidden="true" />,
       title: t.cards.dashboards.title,
       description: t.cards.dashboards.description,
     },
@@ -59,6 +59,23 @@ const SolutionsPage = () => {
       <Helmet>
         <title>{t.meta.title}</title>
         <meta name="description" content={t.meta.description} />
+        <link rel="canonical" href="https://naftalissolutions.com/" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://naftalissolutions.com/" />
+        <meta property="og:title" content={t.meta.title} />
+        <meta property="og:description" content={t.meta.description} />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Naftali's Solutions",
+          "url": "https://naftalissolutions.com",
+          "email": "naftalissolutions@gmail.com",
+          "telephone": "+972527073229",
+          "description": t.meta.description,
+          "founder": { "@type": "Person", "name": "Naftali" },
+          "areaServed": "IL",
+          "serviceType": ["Scheduling Software", "WhatsApp Business Integration", "Business Dashboard Development"]
+        })}</script>
       </Helmet>
       <motion.div
         initial={{ opacity: 0 }}

@@ -102,6 +102,11 @@ const QuotePage = () => {
       <Helmet>
         <title>{t.meta.title}</title>
         <meta name="description" content={t.meta.description} />
+        <link rel="canonical" href="https://naftalissolutions.com/quote" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://naftalissolutions.com/quote" />
+        <meta property="og:title" content={t.meta.title} />
+        <meta property="og:description" content={t.meta.description} />
       </Helmet>
 
       <div className="space-y-24" dir={language === 'he' ? 'rtl' : 'ltr'}>

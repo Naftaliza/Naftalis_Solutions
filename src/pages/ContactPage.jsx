@@ -77,9 +77,9 @@ Thanks,
     e.preventDefault();
     setIsSending(true);
 
-    const serviceId = 'service_s30zf2a';
-    const templateId = 'template_plm7hyg';
-    const publicKey = 'rxOLghJIDXWjulT7b';
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
     
     if (serviceId === 'YOUR_SERVICE_ID' || templateId === 'YOUR_TEMPLATE_ID' || publicKey === 'YOUR_PUBLIC_KEY') {
         toast({
@@ -125,7 +125,7 @@ Thanks,
 
   const contactInfo = [
     { icon: <Mail size={24} className="text-teal-500" />, label: t.info.email.label, value: 'naftalissolutions@gmail.com' },
-    { icon: <Phone size={24} className="text-teal-500" />, label: t.info.call.label, value: '+1 (555) 123-4567' },
+    { icon: <Phone size={24} className="text-teal-500" />, label: t.info.call.label, value: '052-7073229' },
     { icon: <MapPin size={24} className="text-teal-500" />, label: t.info.location.label, value: t.info.location.value },
   ];
 
@@ -134,6 +134,11 @@ Thanks,
       <Helmet>
         <title>{t.meta.title}</title>
         <meta name="description" content={t.meta.description} />
+        <link rel="canonical" href="https://naftalissolutions.com/contact" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://naftalissolutions.com/contact" />
+        <meta property="og:title" content={t.meta.title} />
+        <meta property="og:description" content={t.meta.description} />
       </Helmet>
 
       <div className="space-y-24" dir={language === 'he' ? 'rtl' : 'ltr'}>

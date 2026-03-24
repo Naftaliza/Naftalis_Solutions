@@ -40,7 +40,7 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between border-b border-slate-200 py-4">
           <NavLink to="/" className="flex items-center gap-3 text-2xl font-bold text-slate-900">
-            <Rocket size={28} className="text-teal-500" />
+            <Rocket size={28} className="text-teal-500" aria-hidden="true" />
             <span>{translations.header.brand}</span>
           </NavLink>
           

@@ -45,19 +45,19 @@ const ServicesPage = () => {
 
   const services = [
     {
-      icon: <Calendar size={32} />,
+      icon: <Calendar size={32} aria-hidden="true" />,
       title: t.cards.scheduling.title,
       description: t.cards.scheduling.description,
       features: t.cards.scheduling.features,
     },
     {
-      icon: <MessageCircle size={32} />,
+      icon: <MessageCircle size={32} aria-hidden="true" />,
       title: t.cards.whatsapp.title,
       description: t.cards.whatsapp.description,
       features: t.cards.whatsapp.features,
     },
     {
-      icon: <BarChart2 size={32} />,
+      icon: <BarChart2 size={32} aria-hidden="true" />,
       title: t.cards.dashboards.title,
       description: t.cards.dashboards.description,
       features: t.cards.dashboards.features,
@@ -69,6 +69,11 @@ const ServicesPage = () => {
       <Helmet>
         <title>{t.meta.title}</title>
         <meta name="description" content={t.meta.description} />
+        <link rel="canonical" href="https://naftalissolutions.com/services" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://naftalissolutions.com/services" />
+        <meta property="og:title" content={t.meta.title} />
+        <meta property="og:description" content={t.meta.description} />
       </Helmet>
 
       <div className="space-y-24" dir={language === 'he' ? 'rtl' : 'ltr'}>
@@ -131,7 +136,7 @@ const ServicesPage = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="flex-1"
            >
-              <img alt="Blueprint of a custom tech solution" className="rounded-xl shadow-lg" src="https://images.unsplash.com/photo-1578401057158-0e58789f5947" />
+              <img alt="Blueprint of a custom tech solution" className="rounded-xl shadow-lg" loading="lazy" src="https://images.unsplash.com/photo-1578401057158-0e58789f5947" />
            </motion.div>
         </section>
       </div>

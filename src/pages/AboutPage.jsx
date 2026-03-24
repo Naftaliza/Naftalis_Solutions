@@ -31,6 +31,11 @@ const AboutPage = () => {
       <Helmet>
         <title>{t.meta.title}</title>
         <meta name="description" content={t.meta.description} />
+        <link rel="canonical" href="https://naftalissolutions.com/about" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://naftalissolutions.com/about" />
+        <meta property="og:title" content={t.meta.title} />
+        <meta property="og:description" content={t.meta.description} />
       </Helmet>
 
       <div className="space-y-24" dir={language === 'he' ? 'rtl' : 'ltr'}>
@@ -87,19 +92,19 @@ const AboutPage = () => {
 
           <div className="grid md:grid-cols-3 gap-10 mt-16">
             <ValueCard
-              icon={<Users size={32} />}
+              icon={<Users size={32} aria-hidden="true" />}
               title={t.values.cards.customer.title}
               description={t.values.cards.customer.description}
               delay={0.2}
             />
             <ValueCard
-              icon={<Zap size={32} />}
+              icon={<Zap size={32} aria-hidden="true" />}
               title={t.values.cards.simplicity.title}
               description={t.values.cards.simplicity.description}
               delay={0.4}
             />
             <ValueCard
-              icon={<Target size={32} />}
+              icon={<Target size={32} aria-hidden="true" />}
               title={t.values.cards.impact.title}
               description={t.values.cards.impact.description}
               delay={0.6}
