@@ -29,25 +29,25 @@ const Footer = () => {
     ];
 
     return (
-        <footer className="bg-slate-100 border-t border-slate-200" dir={language === 'he' ? 'rtl' : 'ltr'}>
+        <footer className="bg-slate-900/80 backdrop-blur border-t border-slate-700/50" dir={language === 'he' ? 'rtl' : 'ltr'}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="space-y-4">
-                        <NavLink to="/" className="flex items-center gap-3 text-2xl font-bold text-slate-900">
+                        <NavLink to="/" className="flex items-center gap-3 text-2xl font-bold text-white">
                             <Rocket size={28} className="text-teal-500" />
                             <span>{translations.footer.brand}</span>
                         </NavLink>
-                        <p className="text-slate-600 max-w-xs">
+                        <p className="text-slate-400 max-w-xs">
                             {translations.footer.tagline}
                         </p>
                     </div>
 
                     <div>
-                        <p className="font-semibold text-slate-800 mb-4">{translations.footer.quickLinks}</p>
+                        <p className="font-semibold text-white mb-4">{translations.footer.quickLinks}</p>
                         <ul className="space-y-3">
                             {footerLinks.map(link => (
                                 <li key={link.to}>
-                                    <NavLink to={link.to} className="text-slate-600 hover:text-teal-500 transition-colors">
+                                    <NavLink to={link.to} className="text-slate-400 hover:text-teal-400 transition-colors">
                                         {link.label}
                                     </NavLink>
                                 </li>
@@ -56,10 +56,10 @@ const Footer = () => {
                     </div>
                     
                      <div>
-                        <p className="font-semibold text-slate-800 mb-4">{translations.footer.connect}</p>
+                        <p className="font-semibold text-white mb-4">{translations.footer.connect}</p>
                         <div className="flex items-center gap-4">
                             {socialLinks.map(social => (
-                                <button key={social.label} onClick={handleSocialClick} className="text-slate-500 hover:text-teal-500 transition-colors">
+                                <button key={social.label} onClick={handleSocialClick} className="text-slate-400 hover:text-teal-400 transition-colors">
                                     {social.icon}
                                     <span className="sr-only">{social.label}</span>
                                 </button>
@@ -68,7 +68,7 @@ const Footer = () => {
                     </div>
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-slate-200 text-center text-slate-500">
+                <div className="mt-12 pt-8 border-t border-slate-700/50 text-center text-slate-500">
                     <p>&copy; {currentYear} {translations.footer.brand}. {translations.footer.rights}</p>
                 </div>
             </div>
