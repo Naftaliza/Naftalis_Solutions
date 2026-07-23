@@ -134,9 +134,16 @@ const ServicesPage = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex-1"
+            className="flex-1 w-full"
            >
-              <img alt="Blueprint of a custom tech solution" className="rounded-xl shadow-lg" loading="lazy" src="https://images.unsplash.com/photo-1578401057158-0e58789f5947" />
+              <div
+                role="img"
+                aria-label={t.custom.title}
+                className="relative w-full aspect-square max-w-sm mx-auto rounded-xl shadow-lg bg-gradient-to-br from-teal-500 via-teal-600 to-slate-800 flex items-center justify-center overflow-hidden"
+              >
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+                <Settings size={96} className="text-white/90 relative" aria-hidden="true" />
+              </div>
            </motion.div>
         </section>
       </div>

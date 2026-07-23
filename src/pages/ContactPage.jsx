@@ -16,7 +16,8 @@ const ContactPage = () => {
   const location = useLocation();
   
   const [isSending, setIsSending] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '', company: '' });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (location.state?.selectedPlan) {
@@ -71,10 +72,40 @@ Thanks,
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.name.trim()) newErrors.name = t.form.errors.nameRequired;
+    if (!formData.email.trim()) {
+      newErrors.email = t.form.errors.emailRequired;
+    } else if (!emailRegex.test(formData.email.trim())) {
+      newErrors.email = t.form.errors.emailInvalid;
+    }
+    if (!formData.subject.trim()) newErrors.subject = t.form.errors.subjectRequired;
+    if (!formData.message.trim()) newErrors.message = t.form.errors.messageRequired;
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Honeypot: if this hidden field got filled, it was a bot — silently drop the submission.
+    if (formData.company) {
+      return;
+    }
+
+    if (!validate()) {
+      return;
+    }
+
     setIsSending(true);
 
     const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
@@ -92,12 +123,13 @@ Thanks,
     }
 
     const fullMessage = language === 'he'
-      ? `שם: ${formData.name}\nאימייל: ${formData.email}\n\n${formData.message}`
-      : `Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`;
-    
+      ? `שם: ${formData.name}\nאימייל: ${formData.email}\nטלפון: ${formData.phone || '—'}\n\n${formData.message}`
+      : `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone || '—'}\n\n${formData.message}`;
+
     const emailJsData = {
       from_name: formData.name,
       from_email: formData.email,
+      phone: formData.phone,
       subject: formData.subject,
       message: fullMessage,
     };
@@ -109,7 +141,8 @@ Thanks,
             title: t.toast.title,
             description: t.toast.description,
           });
-          setFormData({ name: '', email: '', subject: '', message: '' });
+          setFormData({ name: '', email: '', phone: '', subject: '', message: '', company: '' });
+          setErrors({});
       }, (error) => {
           console.log(error.text);
           toast({
@@ -174,24 +207,38 @@ Thanks,
             className="bg-white p-8 sm:p-12 rounded-2xl shadow-2xl"
           >
             <h2 className="text-3xl font-bold text-slate-900 mb-8">{t.form.title}</h2>
-            <form ref={form} onSubmit={handleSubmit} className="space-y-6">
+            <form ref={form} onSubmit={handleSubmit} className="space-y-6" noValidate>
+              {/* Honeypot field — hidden from sighted users, only bots tend to fill it in */}
+              <div className="absolute left-[-9999px] top-auto w-px h-px overflow-hidden" aria-hidden="true">
+                <label htmlFor="company">Company</label>
+                <input type="text" name="company" id="company" tabIndex="-1" autoComplete="off" value={formData.company} onChange={handleInputChange} />
+              </div>
+
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">{t.form.name}</label>
-                  <input type="text" name="name" id="name" value={formData.name} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"/>
+                  <input type="text" name="name" id="name" value={formData.name} onChange={handleInputChange} aria-invalid={!!errors.name} className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"/>
+                  {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">{t.form.email}</label>
-                  <input type="email" name="email" id="email" value={formData.email} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"/>
+                  <input type="email" name="email" id="email" value={formData.email} onChange={handleInputChange} aria-invalid={!!errors.email} className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"/>
+                  {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
                 </div>
               </div>
               <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">{t.form.phone}</label>
+                <input type="tel" name="phone" id="phone" value={formData.phone} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"/>
+              </div>
+              <div>
                 <label htmlFor="subject" className="block text-sm font-medium text-slate-700 mb-2">{t.form.subject}</label>
-                <input type="text" name="subject" id="subject" value={formData.subject} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"/>
+                <input type="text" name="subject" id="subject" value={formData.subject} onChange={handleInputChange} aria-invalid={!!errors.subject} className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"/>
+                {errors.subject && <p className="text-sm text-red-500 mt-1">{errors.subject}</p>}
               </div>
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-2">{t.form.message}</label>
-                <textarea name="message" id="message" rows="8" value={formData.message} onChange={handleInputChange} required className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"></textarea>
+                <textarea name="message" id="message" rows="8" value={formData.message} onChange={handleInputChange} aria-invalid={!!errors.message} className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"></textarea>
+                {errors.message && <p className="text-sm text-red-500 mt-1">{errors.message}</p>}
               </div>
               <div>
                 <Button type="submit" size="lg" className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-300" disabled={isSending}>

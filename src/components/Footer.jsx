@@ -1,30 +1,24 @@
 import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Rocket, Twitter, Linkedin, Github } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { Rocket, Mail, Phone, MessageCircle } from 'lucide-react';
 import { LanguageContext } from '@/context/LanguageContext';
+import { WHATSAPP_NUMBER, WHATSAPP_DEFAULT_MESSAGE } from '@/lib/whatsapp';
 
 const Footer = () => {
-    const { toast } = useToast();
     const { language, translations } = useContext(LanguageContext);
     const currentYear = new Date().getFullYear();
 
-    const handleSocialClick = () => {
-        toast({
-            title: "🚧 Feature Coming Soon!",
-            description: "Social media links are not yet configured. You can request this in a future prompt!",
-        });
-    };
-
     const socialLinks = [
-        { icon: <Twitter size={20} />, label: 'Twitter' },
-        { icon: <Linkedin size={20} />, label: 'LinkedIn' },
-        { icon: <Github size={20} />, label: 'GitHub' },
+        { icon: <Mail size={20} />, label: translations.footer.social.email, href: 'mailto:naftalissolutions@gmail.com' },
+        { icon: <Phone size={20} />, label: translations.footer.social.call, href: 'tel:+972527073229' },
+        { icon: <MessageCircle size={20} />, label: translations.footer.social.whatsapp, href: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_DEFAULT_MESSAGE[language])}` },
     ];
 
     const footerLinks = [
         { to: '/about', label: translations.footer.about },
         { to: '/services', label: translations.footer.services },
+        { to: '/faq', label: translations.footer.faq },
+        { to: '/blog', label: translations.footer.blog },
         { to: '/contact', label: translations.footer.contact },
     ];
 
@@ -59,17 +53,22 @@ const Footer = () => {
                         <p className="font-semibold text-slate-800 mb-4">{translations.footer.connect}</p>
                         <div className="flex items-center gap-4">
                             {socialLinks.map(social => (
-                                <button key={social.label} onClick={handleSocialClick} className="text-slate-500 hover:text-teal-500 transition-colors">
+                                <a key={social.label} href={social.href} target={social.href.startsWith('http') ? '_blank' : undefined} rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined} className="text-slate-500 hover:text-teal-500 transition-colors">
                                     {social.icon}
                                     <span className="sr-only">{social.label}</span>
-                                </button>
+                                </a>
                             ))}
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-slate-200 text-center text-slate-500">
+                <div className="mt-12 pt-8 border-t border-slate-200 text-center text-slate-500 space-y-2">
                     <p>&copy; {currentYear} {translations.footer.brand}. {translations.footer.rights}</p>
+                    <p>
+                        <NavLink to="/privacy-policy" className="hover:text-teal-500 transition-colors underline">
+                            {translations.footer.privacyPolicy}
+                        </NavLink>
+                    </p>
                 </div>
             </div>
         </footer>

@@ -1,9 +1,9 @@
 ## Pages
-- [- Our Store](/productdetail): No description available
-- [Payment Successful!](/success): Your order has been placed successfully.
-- [Untitled Page](/about): No description available
-- [Untitled Page](/contact): No description available
-- [Untitled Page](/quote): No description available
-- [Untitled Page](/quotethankyou): No description available
-- [Untitled Page](/services): No description available
-- [Untitled Page](/solutions): No description available
+- [About Us | Naftali's Solutions](/about): Learn about Naftali's Solutions, our mission, values, and our commitment to empowering small businesses with technology.
+- [Blog | Naftali's Solutions](/blog): Practical, no-fluff articles on appointment scheduling and WhatsApp automation for small businesses.
+- [Contact Us | Naftali's Solutions](/contact): Get in touch with Naftali's Solutions to discuss your project or ask any questions. We're here to help.
+- [FAQ | Naftali's Solutions](/faq): Answers to common questions about our appointment scheduling, WhatsApp integration, and dashboard solutions for small businesses.
+- [Naftali's Solutions - Tech for Small Business](/): We provide smart technology solutions like appointment scheduling and WhatsApp integration to help small businesses grow.
+- [Our Services | Naftali's Solutions](/services): Explore the services offered by Naftali's Solutions, including smart appointment scheduling, WhatsApp integration, and custom business dashboards.
+- [Pricing Plans | Naftali's Solutions](/quote): Choose the perfect plan for your business. We offer transparent pricing for our technology solutions.
+- [Privacy Policy | Naftali's Solutions](/privacy-policy): How naftalissolutions.com collects, uses, and protects your information.

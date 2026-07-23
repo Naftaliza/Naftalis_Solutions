@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { NavLink } from 'react-router-dom';
 import { LanguageContext } from '@/context/LanguageContext';
 
 const text = {
@@ -61,7 +62,10 @@ export default function CookieBanner() {
           className="fixed bottom-0 left-0 right-0 z-50 bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xl"
         >
           <p className="text-sm text-slate-300 max-w-2xl">
-            {t.message}
+            {t.message}{' '}
+            <NavLink to="/privacy-policy" className="underline hover:text-white">
+              {t.policy}
+            </NavLink>
           </p>
           <div className="flex gap-3 shrink-0">
             <button
