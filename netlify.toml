@@ -10,11 +10,14 @@
 
 # Fallback only. Netlify serves a matching static file before applying a
 # non-forced rewrite, so the prerendered /services/index.html, /he/index.html
-# and friends are served as-is; this catches anything else and lets the SPA
-# render its 404.
+# and friends are served as-is; this catches anything else.
+#
+# Points at app-shell.html (empty #root), NOT index.html: serving the
+# prerendered homepage here made React discard it and re-render, throwing
+# hydration errors 418/422/425 on every unrecognised URL.
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/app-shell.html"
   status = 200
 
 [[headers]]

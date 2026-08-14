@@ -15,7 +15,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { prerenderPaths } from '../src/lib/site-routes.js';
+import { prerenderPaths, routes, LANGUAGES, localizedPath } from '../src/lib/site-routes.js';
 
 const DIST = path.join(process.cwd(), 'dist');
 const SSR_ENTRY = path.join(process.cwd(), 'dist-ssr', 'entry-server.js');
@@ -61,6 +61,32 @@ function injectBody(template, appHtml, htmlAttributes) {
 	return out;
 }
 
+/**
+ * A shell with an empty #root, for URLs that have no prerendered page:
+ * the state-gated thank-you route, and anything unrecognised that hits the
+ * catch-all rewrite.
+ *
+ * Without this, those URLs are served the prerendered ENGLISH HOMEPAGE and
+ * hydrateRoot has to discard it and re-render — React errors 418/422/425,
+ * plus a flash of the wrong content.
+ */
+function buildShell(template) {
+	const head = [
+		'<title>Naftali\'s Solutions</title>',
+		'<meta name="robots" content="noindex" />',
+	].join('\n\t\t');
+
+	const start = template.indexOf(SEO_START);
+	const end = template.indexOf(SEO_END);
+	const withHead =
+		start === -1 || end === -1
+			? template
+			: template.slice(0, start) + head + template.slice(end + SEO_END.length);
+
+	// Root stays empty, so there is nothing for React to mismatch against.
+	return withHead;
+}
+
 function outputFileFor(routePath) {
 	// "/" -> dist/index.html ; "/he/services" -> dist/he/services/index.html
 	if (routePath === '/') return path.join(DIST, 'index.html');
@@ -103,6 +129,27 @@ async function main() {
 			failures += 1;
 			console.error(`  FAILED ${routePath}: ${error.message}`);
 		}
+	}
+
+	// Shell for the catch-all rewrite, plus the routes deliberately not
+	// prerendered (state-gated ones that would only capture a redirect).
+	const shell = buildShell(template);
+	const shellTargets = ['/app-shell'];
+	for (const route of routes) {
+		if (route.prerender !== false) continue;
+		for (const language of LANGUAGES) {
+			shellTargets.push(localizedPath(route.path, language));
+		}
+	}
+
+	for (const target of shellTargets) {
+		const outFile =
+			target === '/app-shell'
+				? path.join(DIST, 'app-shell.html')
+				: outputFileFor(target);
+		fs.mkdirSync(path.dirname(outFile), { recursive: true });
+		fs.writeFileSync(outFile, shell, 'utf8');
+		console.log(`  shell        ${target}`);
 	}
 
 	console.log(`prerender: ${paths.length - failures}/${paths.length} routes written`);
