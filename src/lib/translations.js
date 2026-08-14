@@ -5,20 +5,31 @@ const translations = {
       brand: "Naftali's Solutions",
       about: "About",
       services: "Services",
+      pricing: "Pricing",
       faq: "FAQ",
       contact: "Contact",
       getQuote: "Get a Quote",
+      openMenu: "Open menu",
+      closeMenu: "Close menu",
     },
     footer: {
       brand: "Naftali's Solutions",
-      tagline: "Empowering small businesses with smart, simple, and effective technology solutions.",
+      tagline: "Booking, reminders and WhatsApp replies that run themselves — built for small businesses in Israel.",
+      solutionsHeading: "Solutions",
+      companyHeading: "Company",
+      contactHeading: "Get in touch",
       quickLinks: "Quick Links",
       about: "About",
       services: "Services",
+      pricing: "Pricing",
       faq: "FAQ",
       blog: "Blog",
       contact: "Contact",
       connect: "Connect With Us",
+      whatsappLabel: "Message on WhatsApp",
+      location: "Tel Aviv, Israel — working remotely",
+      availability: "Taking on new projects",
+      hours: "Replies within one business day",
       privacyPolicy: "Privacy Policy",
       rights: "All rights reserved.",
       social: {
@@ -30,32 +41,143 @@ const translations = {
     solutionsPage: {
       meta: {
         title: "Naftali's Solutions - Tech for Small Business",
-        description: "We provide smart technology solutions like appointment scheduling and WhatsApp integration to help small businesses grow.",
+        description: "Appointment booking, WhatsApp automation and custom dashboards for small businesses in Israel. Published pricing, no lock-in, set up in days.",
       },
       hero: {
-        title1: "Technology that",
-        title2: "Grows Your Business",
-        subtitle: "We empower small companies with smart, simple, and effective solutions. From automated appointments to seamless customer communication, we've got you covered.",
-        ctaExplore: "Explore Solutions",
-        ctaQuote: "Get a Free Quote",
+        eyebrow: "Built for small business in Israel",
+        title1: "Stop losing hours",
+        title2: "to the phone.",
+        subtitle: "Booking, reminders and WhatsApp replies that run themselves — so you can get back to the work you actually charge for.",
+        ctaExplore: "See how it works",
+        ctaQuote: "Message on WhatsApp",
+        trustLine: "Published pricing · No lock-in · Live in days",
+      },
+      audience: {
+        title: "Built for businesses that run on appointments",
+        items: [
+          "Hair & beauty studios",
+          "Clinics & therapists",
+          "Trades & home services",
+          "Instructors & studios",
+          "Consultants",
+          "Repair shops",
+        ],
+      },
+      problems: {
+        eyebrow: "Sound familiar?",
+        title: "The admin is eating your day",
+        subtitle: "Three things come up in almost every conversation I have with an owner.",
+        items: [
+          {
+            title: "The phone never stops",
+            body: "You're mid-appointment and it rings again. You call back between clients, play voicemail tag, and lose the booking to whoever answered first.",
+          },
+          {
+            title: "No-shows cost you real money",
+            body: "An empty chair you could have filled. Manual reminders help — when you remember to send them, which is exactly when you're busiest.",
+          },
+          {
+            title: "You're guessing about your own business",
+            body: "Which service earns most? Which day is dead? Which customers never came back? The answers are in your calendar, just not in a form you can read.",
+          },
+        ],
       },
       solutions: {
-        title: "Our Core Solutions",
-        subtitle: "Everything you need to streamline your operations and delight your customers.",
+        eyebrow: "What I build",
+        title: "Three systems, working together",
+        subtitle: "Take one, or take all three. They share the same calendar and the same customer list.",
       },
       cards: {
         scheduling: {
           title: "Smart Appointment Scheduling",
-          description: "Automate your booking process, reduce no-shows, and manage your calendar effortlessly with our intelligent appointment system.",
+          description: "Customers book themselves, day or night. Automatic reminders go out by SMS and email, your calendar stays current, and double-bookings stop happening.",
         },
         whatsapp: {
           title: "WhatsApp Business Integration",
-          description: "Connect with your customers on their favorite platform. Automate messages, provide support, and drive sales through WhatsApp.",
+          description: "Answer the questions you get twenty times a week automatically, confirm appointments, and send updates — on the app your customers already have open.",
         },
         dashboards: {
           title: "Custom Business Dashboards",
-          description: "Get a clear view of your business performance. We build custom dashboards to track your most important metrics in real-time.",
+          description: "One screen that tells you what's actually happening: bookings, revenue, busiest hours, and who hasn't been back in a while.",
         },
+      },
+      howItWorks: {
+        eyebrow: "How it works",
+        title: "Live in days, not months",
+        subtitle: "No long project, no jargon, and no need to change how you already work.",
+        steps: [
+          {
+            title: "A 15-minute call",
+            body: "You tell me how your day runs and where it breaks. I tell you honestly whether I can help and what it would cost. No pitch.",
+          },
+          {
+            title: "I build it around you",
+            body: "Set up to match your services, your hours and your rules. You review it before a single customer sees it.",
+          },
+          {
+            title: "You go live",
+            body: "I migrate your existing bookings, walk you through it, and stay on the other end of the phone afterwards.",
+          },
+        ],
+      },
+      promise: {
+        eyebrow: "What you get either way",
+        title: "The part most vendors leave out",
+        items: [
+          {
+            title: "You talk to me, not a ticket queue",
+            body: "The person who built your system is the person who answers when something needs changing.",
+          },
+          {
+            title: "A reply within one business day",
+            body: "Every message, every time. If something's broken, sooner than that.",
+          },
+          {
+            title: "No lock-in contract",
+            body: "Month to month. If it isn't earning its keep, stop — I'd rather that than a customer who resents the invoice.",
+          },
+          {
+            title: "Your data stays yours",
+            body: "Your customer list and booking history are exportable at any time, in a normal format you can actually use.",
+          },
+        ],
+      },
+      pricingPreview: {
+        eyebrow: "Pricing",
+        title: "Published, not negotiated",
+        subtitle: "You'll know what it costs before you ever talk to me.",
+        cta: "See what's included",
+        popular: "Most popular",
+        from: "from",
+      },
+      founderSection: {
+        eyebrow: "Who you'll be working with",
+        title: "One person — and that's the point",
+        body: "I'm Naftali. I build and support every system myself, which means nothing gets lost between a salesperson, a project manager and a developer who never spoke to you. It also means I take on a limited number of businesses at a time, and I'll tell you upfront if yours isn't a good fit.",
+        cta: "More about how I work",
+      },
+      faqTeaser: {
+        eyebrow: "Questions",
+        title: "The things people ask first",
+        cta: "Read all questions",
+      },
+      finalCta: {
+        title: "Tell me what's slowing you down",
+        subtitle: "A 15-minute call, no pitch. If I'm not the right fit for your business, I'll say so.",
+        primary: "Get a quote",
+        secondary: "Message on WhatsApp",
+      },
+      mockup: {
+        label: "Your booking page",
+        today: "Thursday",
+        slotsLeft: "4 slots left",
+        confirmed: "confirmed",
+        days: ["M", "T", "W", "T", "F"],
+        waMessage: "Hi! Are you free Thursday morning?",
+        waReply: "Yes — 10:30 is open. Shall I book it?",
+        waAuto: "Replied automatically",
+        statBookings: "Bookings this week",
+        statRevenue: "Revenue",
       },
     },
     aboutPage: {
@@ -167,7 +289,11 @@ const translations = {
         },
         toast: {
             title: "Message Sent! 🚀",
-            description: "Thanks for reaching out! We'll get back to you shortly."
+            description: "Thanks for reaching out! We'll get back to you shortly.",
+            errorTitle: "That didn't send",
+            errorDescription: "Something went wrong on our end. Please try again, or message us on WhatsApp and we'll pick it up there.",
+            unavailableTitle: "The form is temporarily unavailable",
+            unavailableDescription: "Please reach us on WhatsApp or by phone instead — we'll reply just as fast."
         }
     },
     quotePage: {
@@ -224,14 +350,25 @@ const translations = {
     },
     quoteThankYouPage: {
       meta: {
-        title: "Thank You! | Naftali's Solutions",
-        description: "You've selected a plan. The next step is to get in touch."
+        title: "Message Sent | Naftali's Solutions",
+        description: "Your message has been sent. I'll reply within one business day."
       },
       hero: {
-        title: "Awesome Choice!",
-        subtitle: "You've selected the {planName} plan. The next step is to fill out our contact form so we can get in touch with you."
+        title: "Got it — thanks!",
+        subtitle: "Your message is with me. I'll reply within one business day, and usually well before that."
       },
-      ctaButton: "Complete Your Request"
+      planLine: "You asked about the {planName} plan.",
+      next: {
+        title: "What happens next",
+        steps: [
+          "I read your message and work out whether I can actually help.",
+          "I reply with honest pricing and a realistic timeline — or tell you straight if I'm not the right fit.",
+          "If it looks like a match, we book a 15-minute call."
+        ]
+      },
+      ctaButton: "Back to home",
+      whatsappPrompt: "Need an answer sooner?",
+      whatsappCta: "Message me on WhatsApp"
     },
     faqPage: {
       meta: {
@@ -349,7 +486,14 @@ const translations = {
       closeLabel: "Close accessibility panel"
     },
     whatsappWidget: {
-      ariaLabel: "Chat on WhatsApp"
+      ariaLabel: "Chat on WhatsApp",
+      message: "Hi! I'd like to learn more about Naftali's Solutions."
+    },
+    cookieBanner: {
+      message: "We use cookies to understand how the site is used. Nothing is shared with advertisers.",
+      accept: "Accept",
+      decline: "Decline",
+      policy: "Privacy Policy"
     },
     mobileCta: {
       call: "Call",
@@ -363,20 +507,31 @@ const translations = {
       brand: "Naftali's Solutions",
       about: "אודות",
       services: "שירותים",
+      pricing: "מחירים",
       faq: "שאלות נפוצות",
       contact: "צור קשר",
       getQuote: "קבל הצעת מחיר",
+      openMenu: "פתיחת תפריט",
+      closeMenu: "סגירת תפריט",
     },
     footer: {
       brand: "Naftali's Solutions",
-      tagline: "מעצימים עסקים קטנים עם פתרונות טכנולוגיים חכמים, פשוטים ויעילים.",
+      tagline: "קביעת תורים, תזכורות ומענה בוואטסאפ שעובדים לבד — לעסקים קטנים בישראל.",
+      solutionsHeading: "פתרונות",
+      companyHeading: "החברה",
+      contactHeading: "יצירת קשר",
       quickLinks: "קישורים מהירים",
       about: "אודות",
       services: "שירותים",
+      pricing: "מחירים",
       faq: "שאלות נפוצות",
       blog: "בלוג",
       contact: "צור קשר",
       connect: "התחברו אלינו",
+      whatsappLabel: "שלחו הודעה בוואטסאפ",
+      location: "תל אביב, ישראל — עבודה מרחוק",
+      availability: "פנוי לפרויקטים חדשים",
+      hours: "מענה תוך יום עסקים אחד",
       privacyPolicy: "מדיניות פרטיות",
       rights: "כל הזכויות שמורות.",
       social: {
@@ -391,29 +546,140 @@ const translations = {
         description: "אנו מספקים פתרונות טכנולוגיים חכמים כמו מערכת לקביעת תורים ואינטגרציה עם וואטסאפ כדי לעזור לעסקים קטנים לצמוח.",
       },
       hero: {
-        title1: "טכנולוגיה",
-        title2: "שמצמיחה את העסק שלך",
-        subtitle: "אנו מעצימים חברות קטנות עם פתרונות חכמים, פשוטים ויעילים. מקביעת תורים אוטומטית ועד לתקשורת חלקה עם לקוחות, אנחנו דואגים לכם.",
-        ctaExplore: "גלה את הפתרונות",
-        ctaQuote: "קבל הצעת מחיר חינם",
+        eyebrow: "בנוי לעסקים קטנים בישראל",
+        title1: "תפסיקו לבזבז שעות",
+        title2: "על הטלפון.",
+        subtitle: "קביעת תורים, תזכורות ומענה בוואטסאפ שעובדים לבד — כדי שתחזרו לעבודה שעליה אתם באמת מקבלים תשלום.",
+        ctaExplore: "איך זה עובד",
+        ctaQuote: "שלחו הודעה בוואטסאפ",
+        trustLine: "מחירים גלויים · בלי התחייבות · עולה לאוויר תוך ימים",
+      },
+      audience: {
+        title: "בנוי לעסקים שחיים על תורים",
+        items: [
+          "מספרות ומכוני יופי",
+          "קליניקות ומטפלים",
+          "בעלי מקצוע ושירותי בית",
+          "מדריכים וסטודיו",
+          "יועצים",
+          "מעבדות תיקונים",
+        ],
+      },
+      problems: {
+        eyebrow: "נשמע מוכר?",
+        title: "הניהול אוכל לכם את היום",
+        subtitle: "שלושה דברים חוזרים כמעט בכל שיחה שלי עם בעל עסק.",
+        items: [
+          {
+            title: "הטלפון לא מפסיק לצלצל",
+            body: "אתם באמצע טיפול והוא מצלצל שוב. מחזירים בין לקוח ללקוח, משחקים במשחק ההודעות, ומאבדים את התור למי שענה ראשון.",
+          },
+          {
+            title: "אי-הופעות עולות לכם כסף אמיתי",
+            body: "כיסא ריק שיכולתם למלא. תזכורות ידניות עוזרות — כשזוכרים לשלוח אותן, וזה בדיוק כשאתם הכי עמוסים.",
+          },
+          {
+            title: "אתם מנחשים לגבי העסק שלכם",
+            body: "איזה שירות מכניס הכי הרבה? איזה יום מת? אילו לקוחות לא חזרו? התשובות נמצאות ביומן שלכם, פשוט לא בצורה שאפשר לקרוא.",
+          },
+        ],
       },
       solutions: {
-        title: "הפתרונות המרכזיים שלנו",
-        subtitle: "כל מה שאתה צריך כדי לייעל את התפעול שלך ולשמח את הלקוחות שלך.",
+        eyebrow: "מה אני בונה",
+        title: "שלוש מערכות שעובדות יחד",
+        subtitle: "קחו אחת, או את שלושתן. הן חולקות את אותו יומן ואת אותה רשימת לקוחות.",
       },
       cards: {
         scheduling: {
           title: "מערכת חכמה לקביעת תורים",
-          description: "הפוך את תהליך קביעת התורים לאוטומטי, צמצם אי-הופעות ונהל את היומן שלך ללא מאמץ עם מערכת התורים החכמה שלנו.",
+          description: "הלקוחות קובעים תור בעצמם, ביום ובלילה. תזכורות אוטומטיות יוצאות ב-SMS ובמייל, היומן תמיד מעודכן, וכפל תורים פשוט מפסיק לקרות.",
         },
         whatsapp: {
           title: "אינטגרציה עסקית עם וואטסאפ",
-          description: "התחבר ללקוחות שלך בפלטפורמה המועדפת עליהם. הפוך הודעות לאוטומטיות, ספק תמיכה והגדל מכירות דרך וואטסאפ.",
+          description: "ענו אוטומטית על השאלות שחוזרות עשרים פעם בשבוע, אשרו תורים ושלחו עדכונים — באפליקציה שכבר פתוחה אצל הלקוחות שלכם.",
         },
         dashboards: {
           title: "דשבורדים עסקיים מותאמים אישית",
-          description: "קבל תמונה ברורה של ביצועי העסק שלך. אנו בונים דשבורדים מותאמים אישית למעקב אחר המדדים החשובים ביותר שלך בזמן אמת.",
+          description: "מסך אחד שאומר לכם מה באמת קורה: תורים, הכנסות, שעות עומס, ומי לא חזר כבר הרבה זמן.",
         },
+      },
+      howItWorks: {
+        eyebrow: "איך זה עובד",
+        title: "עולה לאוויר תוך ימים, לא חודשים",
+        subtitle: "בלי פרויקט ארוך, בלי מילים גדולות, ובלי לשנות את הדרך שבה אתם כבר עובדים.",
+        steps: [
+          {
+            title: "שיחה של רבע שעה",
+            body: "אתם מספרים לי איך היום שלכם מתנהל ואיפה הוא נתקע. אני אומר לכם בכנות אם אני יכול לעזור וכמה זה יעלה. בלי מכירות.",
+          },
+          {
+            title: "אני בונה סביבכם",
+            body: "מותאם לשירותים שלכם, לשעות שלכם ולכללים שלכם. אתם עוברים על הכול לפני שלקוח אחד רואה את זה.",
+          },
+          {
+            title: "אתם עולים לאוויר",
+            body: "אני מעביר את התורים הקיימים, עובר אתכם על המערכת, ונשאר בקצה השני של הטלפון גם אחר כך.",
+          },
+        ],
+      },
+      promise: {
+        eyebrow: "מה שמקבלים בכל מקרה",
+        title: "החלק שרוב הספקים משמיטים",
+        items: [
+          {
+            title: "מדברים איתי, לא עם מוקד",
+            body: "מי שבנה את המערכת שלכם הוא מי שעונה כשצריך לשנות בה משהו.",
+          },
+          {
+            title: "מענה תוך יום עסקים אחד",
+            body: "לכל הודעה, בכל פעם. אם משהו לא עובד — הרבה לפני זה.",
+          },
+          {
+            title: "בלי חוזה מחייב",
+            body: "חודש בחודשו. אם זה לא מחזיר את ההשקעה, תפסיקו — אני מעדיף את זה על לקוח שכועס על החשבונית.",
+          },
+          {
+            title: "המידע נשאר שלכם",
+            body: "רשימת הלקוחות והיסטוריית התורים ניתנות לייצוא בכל רגע, בפורמט נורמלי שאפשר להשתמש בו.",
+          },
+        ],
+      },
+      pricingPreview: {
+        eyebrow: "מחירים",
+        title: "גלויים, לא במשא ומתן",
+        subtitle: "תדעו כמה זה עולה עוד לפני שדיברתם איתי.",
+        cta: "מה כלול בכל חבילה",
+        popular: "הכי פופולרי",
+        from: "החל מ־",
+      },
+      founderSection: {
+        eyebrow: "עם מי תעבדו",
+        title: "אדם אחד — וזו בדיוק הנקודה",
+        body: "אני נפתלי. אני בונה ותומך בכל מערכת בעצמי, כך ששום דבר לא הולך לאיבוד בין איש מכירות, מנהל פרויקט ומתכנת שמעולם לא דיבר אתכם. זה גם אומר שאני לוקח מספר מוגבל של עסקים בכל רגע נתון, ואם אתם לא מתאימים — אגיד לכם מראש.",
+        cta: "עוד על דרך העבודה שלי",
+      },
+      faqTeaser: {
+        eyebrow: "שאלות",
+        title: "מה ששואלים אותי ראשון",
+        cta: "לכל השאלות",
+      },
+      finalCta: {
+        title: "ספרו לי מה מעכב אתכם",
+        subtitle: "שיחה של רבע שעה, בלי מכירות. אם אני לא מתאים לעסק שלכם, אני אגיד.",
+        primary: "לקבלת הצעת מחיר",
+        secondary: "הודעה בוואטסאפ",
+      },
+      mockup: {
+        label: "דף התורים שלכם",
+        today: "יום חמישי",
+        slotsLeft: "נותרו 4 תורים",
+        confirmed: "אושר",
+        days: ["ב", "ג", "ד", "ה", "ו"],
+        waMessage: "היי! יש מקום פנוי ביום חמישי בבוקר?",
+        waReply: "כן — 10:30 פנוי. לקבוע?",
+        waAuto: "נענה אוטומטית",
+        statBookings: "תורים השבוע",
+        statRevenue: "הכנסות",
       },
     },
     aboutPage: {
@@ -525,7 +791,11 @@ const translations = {
         },
         toast: {
             title: "ההודעה נשלחה! 🚀",
-            description: "תודה שפנית אלינו! נחזור אליך בהקדם."
+            description: "תודה שפנית אלינו! נחזור אליך בהקדם.",
+            errorTitle: "ההודעה לא נשלחה",
+            errorDescription: "משהו השתבש אצלנו. נסו שוב, או שלחו הודעה בוואטסאפ ונמשיך משם.",
+            unavailableTitle: "הטופס אינו זמין כרגע",
+            unavailableDescription: "אפשר להשיג אותנו בוואטסאפ או בטלפון — נחזור אליכם באותה מהירות."
         }
     },
     quotePage: {
@@ -582,14 +852,25 @@ const translations = {
     },
     quoteThankYouPage: {
       meta: {
-            title: "תודה רבה! | Naftali's Solutions",
-        description: "בחרתם תוכנית. הצעד הבא הוא ליצור קשר."
+        title: "ההודעה נשלחה | Naftali's Solutions",
+        description: "ההודעה שלכם נשלחה. אחזור אליכם תוך יום עסקים אחד."
       },
+      planLine: "שאלתם על חבילת {planName}.",
+      next: {
+        title: "מה קורה עכשיו",
+        steps: [
+          "אני קורא את ההודעה ובודק אם אני באמת יכול לעזור.",
+          "אני חוזר אליכם עם מחיר כנה ולוח זמנים ריאלי — או אומר לכם ישר אם אני לא מתאים.",
+          "אם זה מסתדר, קובעים שיחה של רבע שעה."
+        ]
+      },
+      whatsappPrompt: "צריכים תשובה מהר יותר?",
+      whatsappCta: "שלחו לי הודעה בוואטסאפ",
       hero: {
-        title: "בחירה מצוינת!",
-        subtitle: "בחרת בתוכנית {planName}. הצעד הבא הוא למלא את טופס יצירת הקשר שלנו כדי שנוכל לחזור אליך."
+        title: "קיבלתי — תודה!",
+        subtitle: "ההודעה שלכם אצלי. אחזור אליכם תוך יום עסקים אחד, בדרך כלל הרבה לפני."
       },
-      ctaButton: "השלמת הבקשה"
+      ctaButton: "חזרה לדף הבית"
     },
     faqPage: {
       meta: {
@@ -707,7 +988,14 @@ const translations = {
       closeLabel: "סגירת פאנל הנגישות"
     },
     whatsappWidget: {
-      ariaLabel: "שוחחו איתנו בוואטסאפ"
+      ariaLabel: "שוחחו איתנו בוואטסאפ",
+      message: "היי! אשמח לשמוע עוד על הפתרונות של נפתלי."
+    },
+    cookieBanner: {
+      message: "אנחנו משתמשים בעוגיות כדי להבין איך משתמשים באתר. שום דבר לא משותף עם מפרסמים.",
+      accept: "אישור",
+      decline: "דחייה",
+      policy: "מדיניות פרטיות"
     },
     mobileCta: {
       call: "התקשרו",

@@ -1,37 +1,65 @@
-import React, { useContext } from 'react';
-import { Helmet } from 'react-helmet';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+
+import Seo from '@/components/Seo';
 import { Button } from '@/components/ui/button';
-import { LanguageContext } from '@/context/LanguageContext';
+import { Section } from '@/components/ui/section';
+import { Reveal } from '@/components/ui/reveal';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function NotFoundPage() {
-  const { language, translations } = useContext(LanguageContext);
-  const t = translations.notFoundPage;
+	const { translations, localize, dir } = useLanguage();
+	const t = translations.notFoundPage;
 
-  return (
-    <>
-      <Helmet>
-        <title>{t.meta.title}</title>
-        <meta name="description" content={t.meta.description} />
-        <meta name="robots" content="noindex" />
-      </Helmet>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col items-center justify-center text-center py-32"
-        dir={language === 'he' ? 'rtl' : 'ltr'}
-      >
-        <h1 className="text-9xl font-extrabold text-teal-500">{t.heading}</h1>
-        <h2 className="text-3xl font-bold text-slate-800 mt-6 mb-3">{t.title}</h2>
-        <p className="text-slate-500 mb-10">{t.subtitle}</p>
-        <Link to="/">
-          <Button className="bg-teal-500 hover:bg-teal-600 text-white font-bold px-8 py-3 rounded-full text-lg">
-            {t.button}
-          </Button>
-        </Link>
-      </motion.div>
-    </>
-  );
+	const links = [
+		{ to: '/services', label: translations.header.services },
+		{ to: '/quote', label: translations.header.pricing },
+		{ to: '/faq', label: translations.header.faq },
+		{ to: '/contact', label: translations.header.contact },
+	];
+
+	return (
+		<>
+			<Seo
+				title={t.meta.title}
+				description={t.meta.description}
+				routePath="/"
+				noindex
+			/>
+
+			<div dir={dir}>
+				<Section glow spacing="loose">
+					<Reveal className="mx-auto flex max-w-xl flex-col items-center gap-5 text-center">
+						<p className="gradient-text font-display text-8xl font-extrabold tnum sm:text-9xl">
+							{t.heading}
+						</p>
+						<h1 className="text-2xl font-bold text-foreground sm:text-3xl">{t.title}</h1>
+						<p className="text-muted-foreground">{t.subtitle}</p>
+
+						<Link to={localize('/')} className="mt-3">
+							<Button size="lg">
+								{t.button}
+								<ArrowRight size={18} className="dir-flip" aria-hidden="true" />
+							</Button>
+						</Link>
+
+						{/* A 404 that offers somewhere to go beats one that just apologises. */}
+						<ul className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2">
+							{links.map((link) => (
+								<li key={link.to}>
+									<Link
+										to={localize(link.to)}
+										className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+									>
+										{link.label}
+									</Link>
+								</li>
+							))}
+						</ul>
+					</Reveal>
+				</Section>
+			</div>
+		</>
+	);
 }

@@ -2,8 +2,45 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<link rel="icon" type="image/svg+xml" href="/vite.svg" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="mask-icon" href="/favicon.svg" color="#2DD4BF" />
+		<meta name="theme-color" content="#080D14" />
+		<meta name="color-scheme" content="dark" />
+
+		<!-- Fonts. Rubik (display) and Heebo (body) both carry full Hebrew
+		     coverage, so both languages get the same type system. Loaded here
+		     rather than via @import in index.css so the request starts
+		     immediately instead of queueing behind the CSS bundle.
+
+		     These MUST stay outside the seo markers below — prerender.js
+		     replaces everything between them, which would strip the fonts out
+		     of every built page. -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="preload"
+			as="style"
+			href="https://fonts.googleapis.com/css2?family=Rubik:wght@600;700;800&family=Heebo:wght@400;500;600&display=swap"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Rubik:wght@600;700;800&family=Heebo:wght@400;500;600&display=swap"
+			media="print"
+			onload="this.media='all'"
+		/>
+		<noscript>
+			<link
+				rel="stylesheet"
+				href="https://fonts.googleapis.com/css2?family=Rubik:wght@600;700;800&family=Heebo:wght@400;500;600&display=swap"
+			/>
+		</noscript>
+
+		<!--seo-start-->
+		<!-- Everything between the seo markers is replaced per-route at build
+		     time by tools/prerender.js with that page's real head tags. What's
+		     here is the dev-time / fallback version. -->
 		<title>Naftali's Solutions - Tech for Small Business</title>
 		<meta
 			name="description"
@@ -15,12 +52,16 @@
 		<meta property="og:type" content="website" />
 		<meta property="og:site_name" content="Naftali's Solutions" />
 		<meta property="og:url" content="https://naftalissolutions.com/" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:locale:alternate" content="he_IL" />
 		<meta property="og:title" content="Naftali's Solutions - Tech for Small Business" />
 		<meta
 			property="og:description"
 			content="We provide smart technology solutions like appointment scheduling and WhatsApp integration to help small businesses grow."
 		/>
 		<meta property="og:image" content="https://naftalissolutions.com/og-image.png" />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
 
 		<!-- Twitter / X card -->
 		<meta name="twitter:card" content="summary_large_image" />
@@ -30,18 +71,32 @@
 			content="We provide smart technology solutions like appointment scheduling and WhatsApp integration to help small businesses grow."
 		/>
 		<meta name="twitter:image" content="https://naftalissolutions.com/og-image.png" />
+
 		<link rel="preconnect" href="https://www.googletagmanager.com" />
-		<link rel="preconnect" href="https://www.google-analytics.com" />
+
+		<!-- Hebrew now lives at /he/*, so these point at distinct URLs. All
+		     three previously resolved to the same address, which told search
+		     engines the two languages were one page. -->
 		<link rel="alternate" hreflang="en" href="https://naftalissolutions.com/" />
-		<link rel="alternate" hreflang="he" href="https://naftalissolutions.com/" />
+		<link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he/" />
 		<link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/" />
+		<!--seo-end-->
+
+		<script>
+			// Paint the ground before React mounts so there is no white flash
+			// on a dark site.
+			document.documentElement.style.backgroundColor = '#080D14';
+		</script>
+
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZYLG43XD1J"></script>
 		<script>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
 			gtag('consent', 'default', { analytics_storage: 'denied' });
 			gtag('js', new Date());
-			gtag('config', 'G-ZYLG43XD1J');
+			// send_page_view is off: React Router drives pageviews instead, via
+			// src/lib/analytics.js. Previously GA saw exactly one hit per session.
+			gtag('config', 'G-ZYLG43XD1J', { send_page_view: false });
 		</script>
 	</head>
 	<body>

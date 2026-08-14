@@ -2,65 +2,321 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+/* ============================================================================
+   AURORA — design tokens
+   ----------------------------------------------------------------------------
+   tailwind.config.js has always referenced these custom properties
+   (--primary, --border, --radius, --ring ...) but they were never defined
+   anywhere in the repo. That is why `rounded-lg` computed to 0px and every
+   <Button> variant rendered unstyled. This block is the missing half.
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+   Values are bare HSL triplets so Tailwind can compose them:
+     hsl(var(--primary))            -> solid
+     hsl(var(--primary) / 0.4)      -> alpha
+   ========================================================================== */
+
+@layer base {
+  :root {
+    /* --- Ground & surfaces ------------------------------------------------ */
+    --background:      215 43% 5%;    /* #080D14 deep navy   */
+    --foreground:      215 35% 93%;   /* #E8EDF4 primary text */
+
+    --card:            215 46% 10%;   /* #0E1826 glass panel  */
+    --card-foreground: 215 35% 93%;
+    --popover:         215 43% 13%;   /* #131F30 elevated     */
+    --popover-foreground: 215 35% 93%;
+
+    --muted:           215 43% 13%;
+    --muted-foreground: 214 20% 67%;  /* #9AA9BC              */
+
+    /* --- Brand ------------------------------------------------------------ */
+    --primary:            172 66% 50%; /* #2DD4BF teal        */
+    --primary-foreground: 174 84% 10%; /* dark ink on teal    */
+
+    --secondary:            199 93% 60%; /* #38BDF8 cyan      */
+    --secondary-foreground: 202 80% 10%;
+
+    --accent:            215 43% 16%;
+    --accent-foreground: 215 35% 93%;
+
+    --destructive:            0 72% 58%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success:            152 60% 48%;
+    --success-foreground: 152 80% 8%;
+
+    /* --- Lines & focus ---------------------------------------------------- */
+    --border: 215 36% 18%;
+    --input:  215 36% 18%;
+    --ring:   172 66% 50%;
+
+    /* --- Shape ------------------------------------------------------------ */
+    --radius: 0.75rem;
+
+    /* --- Type ------------------------------------------------------------- */
+    /* Rubik and Heebo both carry full Hebrew coverage, so the same system
+       applies to both languages instead of Hebrew falling back to Arial. */
+    --font-display: 'Rubik', system-ui, sans-serif;
+    --font-body: 'Heebo', system-ui, sans-serif;
+
+    /* Root scale — the accessibility widget overrides this to resize the
+       whole site. Everything below is sized in rem so it follows along. */
+    --root-size: 16px;
+
+    /* --- Ambient aurora --------------------------------------------------- */
+    --glow-primary: 172 66% 50%;
+    --glow-secondary: 199 93% 60%;
+    --glow-strength: 0.30;
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* Accessibility modes — implemented as token swaps, not CSS filters.      */
+  /*                                                                         */
+  /* The previous build applied `filter: contrast(1.5)` to <html>, which     */
+  /* creates a containing block for every position:fixed descendant and      */
+  /* disables backdrop-filter. That broke the sticky header and all four     */
+  /* floating overlays whenever the mode was on. Swapping tokens achieves    */
+  /* the same result with none of that.                                      */
+  /* ---------------------------------------------------------------------- */
+
+  .a11y-contrast {
+    --background:       215 60% 2%;
+    --foreground:       0 0% 100%;
+    --card:             215 55% 7%;
+    --muted-foreground: 214 30% 86%;
+    --border:           215 40% 38%;
+    --primary:          172 90% 62%;
+    --secondary:        199 100% 72%;
+    --glow-strength:    0.10;
+  }
+
+  /* Saturation to zero across the palette — no filter required. */
+  .a11y-grayscale {
+    --primary:          172 0% 72%;
+    --primary-foreground: 0 0% 8%;
+    --secondary:        199 0% 62%;
+    --secondary-foreground: 0 0% 8%;
+    --destructive:      0 0% 55%;
+    --success:          152 0% 60%;
+    --ring:             0 0% 72%;
+    --glow-primary:     0 0% 60%;
+    --glow-secondary:   0 0% 45%;
+    --glow-strength:    0.14;
+  }
+
+  .a11y-dyslexia {
+    --font-display: 'Rubik', 'Arial Hebrew', Arial, sans-serif;
+    --font-body: 'Arial Hebrew', Arial, Verdana, sans-serif;
+    letter-spacing: 0.05em;
+    word-spacing: 0.1em;
+    line-height: 1.85;
+  }
+
+  .a11y-highlight a:not(.btn),
+  .a11y-highlight button {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .a11y-highlight :focus-visible {
+    outline: 3px solid hsl(38 95% 58%);
+    outline-offset: 3px;
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* Base                                                                    */
+  /* ---------------------------------------------------------------------- */
+
+  html {
+    font-size: var(--root-size);
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  * {
+    @apply border-border;
+    min-width: 0;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    font-feature-settings: 'kern' 1;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+    line-height: 1.08;
+  }
+
+  /* Hebrew sits differently on the baseline and does not want negative
+     tracking — Hebrew letterforms lose their counters when tightened. */
+  :root[lang='he'] h1,
+  :root[lang='he'] h2,
+  :root[lang='he'] h3,
+  :root[lang='he'] h4 {
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+  }
+
+  p { text-wrap: pretty; }
+
+  /* Anything anchored below the sticky header needs clearance. */
+  :target { scroll-margin-top: 6rem; }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.28);
+    color: hsl(var(--foreground));
+  }
+
+  /* Scrollbar, tuned for the dark ground */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: hsl(var(--background)); }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 100px;
+    border: 2px solid hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(215 30% 28%); }
+
+  /* One focus treatment for the whole site. The old rule used :focus (not
+     :focus-visible) on inputs, so a mouse click lit up a ring, and it
+     skipped <textarea> entirely. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: calc(var(--radius) - 4px);
+  }
+  :focus:not(:focus-visible) { outline: none; }
 }
 
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: #f8fafc; /* slate-50 */
-  min-height: 100vh;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ============================================================================
+   Components
+   ========================================================================== */
+
+@layer components {
+  /* Teal -> cyan wash used on the emphasised half of a headline. */
+  .gradient-text {
+    background-image: linear-gradient(
+      100deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--secondary)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* Descenders get clipped by background-clip without a little padding. */
+    padding-bottom: 0.08em;
+  }
+
+  /* Frosted panel over the aurora. */
+  .glass {
+    background: hsl(var(--card) / 0.55);
+    border: 1px solid hsl(var(--foreground) / 0.09);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+  }
+
+  .glass-strong {
+    background: hsl(var(--card) / 0.85);
+    border: 1px solid hsl(var(--foreground) / 0.12);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+  }
+
+  /* Hairline that catches the light along a panel's top edge. */
+  .edge-light {
+    position: relative;
+  }
+  .edge-light::before {
+    content: '';
+    position: absolute;
+    inset-inline: 12%;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--foreground) / 0.28),
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  /* Ambient light bleeding in from the edges of a section. */
+  .aurora {
+    position: relative;
+    isolation: isolate;
+  }
+  .aurora::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        42% 55% at 85% 0%,
+        hsl(var(--glow-primary) / var(--glow-strength)),
+        transparent 68%
+      ),
+      radial-gradient(
+        45% 50% at 5% 100%,
+        hsl(var(--glow-secondary) / calc(var(--glow-strength) * 0.7)),
+        transparent 68%
+      );
+  }
+
+  /* Faint grid, for sections that need texture without imagery. */
+  .grid-texture {
+    background-image:
+      linear-gradient(hsl(var(--foreground) / 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--foreground) / 0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000, transparent);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000, transparent);
+  }
+
+  /* Numbers in tables, stats and pricing should align in columns. */
+  .tnum { font-variant-numeric: tabular-nums; }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+/* ============================================================================
+   Motion
+   ========================================================================== */
+
+@layer utilities {
+  @keyframes aurora-drift {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50%      { transform: translate3d(-3%, 2%, 0) scale(1.08); }
+  }
+  .animate-aurora::before { animation: aurora-drift 22s ease-in-out infinite; }
+
+  @keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.45); }
+    70%  { box-shadow: 0 0 0 14px hsl(var(--primary) / 0); }
+    100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
+  }
+  .animate-pulse-ring { animation: pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f5f9; /* slate-100 */
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1; /* slate-300 */
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8; /* slate-400 */
-}
-
-/* Custom focus styles */
-input:focus,
-select:focus,
-button:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.6); /* teal-500 focus ring */
-}
-
-.prose {
-  color: #334155; /* slate-700 */
-}
-
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-  color: #0f172a; /* slate-900 */
-}
-
-.prose a {
-  color: #0d9488; /* teal-600 */
-}
-
-.prose strong {
-  color: #0f172a; /* slate-900 */
-}
-
-.gradient-text {
-  @apply bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent;
+/* Framer Motion is told about this separately via useReducedMotion(); this
+   covers the CSS-driven half. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

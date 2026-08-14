@@ -8,66 +8,113 @@ import AccessibilityWidget from '@/components/AccessibilityWidget';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import MobileCtaBar from '@/components/MobileCtaBar';
 import { LanguageProvider } from '@/context/LanguageContext';
+import { LANGUAGES, localizedPath, routes, aliases } from '@/lib/site-routes';
+import { trackPageView } from '@/lib/analytics';
 
-const SolutionsPage = lazy(() => import('@/pages/SolutionsPage'));
-const AboutPage = lazy(() => import('@/pages/AboutPage'));
-const ServicesPage = lazy(() => import('@/pages/ServicesPage'));
-const ContactPage = lazy(() => import('@/pages/ContactPage'));
-const QuotePage = lazy(() => import('@/pages/QuotePage'));
-const QuoteThankYouPage = lazy(() => import('@/pages/QuoteThankYouPage'));
-const FAQPage = lazy(() => import('@/pages/FAQPage'));
-const BlogPage = lazy(() => import('@/pages/BlogPage'));
-const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage'));
-const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
-
-const ScrollToTop = () => {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  return null;
+const PAGES = {
+	SolutionsPage: lazy(() => import('@/pages/SolutionsPage')),
+	AboutPage: lazy(() => import('@/pages/AboutPage')),
+	ServicesPage: lazy(() => import('@/pages/ServicesPage')),
+	ContactPage: lazy(() => import('@/pages/ContactPage')),
+	QuotePage: lazy(() => import('@/pages/QuotePage')),
+	QuoteThankYouPage: lazy(() => import('@/pages/QuoteThankYouPage')),
+	FAQPage: lazy(() => import('@/pages/FAQPage')),
+	BlogPage: lazy(() => import('@/pages/BlogPage')),
+	PrivacyPolicyPage: lazy(() => import('@/pages/PrivacyPolicyPage')),
+	NotFoundPage: lazy(() => import('@/pages/NotFoundPage')),
 };
 
+/**
+ * Resets scroll on navigation and reports the pageview.
+ *
+ * GA4 previously saw one hit per session because `gtag('config')` fires
+ * once on load and client-side navigations send nothing. Every route change
+ * now reports, after a tick so react-helmet has swapped document.title.
+ */
+const RouteChangeEffects = () => {
+	const { pathname, hash } = useLocation();
+
+	useEffect(() => {
+		if (hash) return; // let the browser handle in-page anchors
+		window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+	}, [pathname, hash]);
+
+	useEffect(() => {
+		const id = window.setTimeout(() => trackPageView(pathname), 60);
+		return () => window.clearTimeout(id);
+	}, [pathname]);
+
+	return null;
+};
+
+const PageFallback = () => (
+	<div className="flex min-h-[60vh] items-center justify-center" role="status">
+		<div
+			className="h-9 w-9 animate-spin rounded-full border-[3px] border-primary/25 border-t-primary"
+			aria-hidden="true"
+		/>
+		<span className="sr-only">Loading</span>
+	</div>
+);
+
+/** Builds the full route tree once per language, so /he/* mirrors /*. */
+const localizedRoutes = () =>
+	LANGUAGES.flatMap((language) => [
+		...routes.map((route) => {
+			const Page = PAGES[route.page];
+			return (
+				<Route
+					key={`${language}-${route.path}`}
+					path={localizedPath(route.path, language)}
+					element={<Page />}
+				/>
+			);
+		}),
+		...aliases.map((alias) => {
+			const Page = PAGES[alias.page];
+			return (
+				<Route
+					key={`${language}-alias-${alias.path}`}
+					path={localizedPath(alias.path, language)}
+					element={<Page />}
+				/>
+			);
+		}),
+	]);
+
 function App() {
-  return (
-    <LanguageProvider>
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-teal-500 focus:text-white focus:px-4 focus:py-2 focus:rounded focus:font-bold"
-      >
-        Skip to content
-      </a>
-      <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
-        <Header />
-        <main id="main-content" className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 md:pb-8 w-full">
-          <ScrollToTop />
-          <Suspense fallback={<div className="flex items-center justify-center py-32"><div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" aria-label="Loading" /></div>}>
-            <Routes>
-              <Route path="/" element={<SolutionsPage />} />
-              <Route path="/solutions" element={<SolutionsPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/services" element={<ServicesPage />} />
-              <Route path="/faq" element={<FAQPage />} />
-              <Route path="/blog" element={<BlogPage />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/quote" element={<QuotePage />} />
-              <Route path="/quote-thank-you" element={<QuoteThankYouPage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Suspense>
-        </main>
-        <Footer />
-      </div>
-      <Toaster />
-      <CookieBanner />
-      <AccessibilityWidget />
-      <WhatsAppButton />
-      <MobileCtaBar />
-    </LanguageProvider>
-  );
+	return (
+		<LanguageProvider>
+			<a
+				href="#main-content"
+				className="sr-only rounded-full bg-primary px-5 py-2.5 font-display font-bold text-primary-foreground focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-[60] focus:shadow-glow"
+			>
+				Skip to content
+			</a>
+
+			{/* No width cap here any more — each Section carries its own
+			    Container, which is what lets a section span the full viewport. */}
+			<div className="flex min-h-screen flex-col bg-background text-foreground">
+				<Header />
+				<main id="main-content" className="flex-grow pb-24 md:pb-0">
+					<RouteChangeEffects />
+					<Suspense fallback={<PageFallback />}>
+						<Routes>
+							{localizedRoutes()}
+							<Route path="*" element={<PAGES.NotFoundPage />} />
+						</Routes>
+					</Suspense>
+				</main>
+				<Footer />
+			</div>
+
+			<Toaster />
+			<CookieBanner />
+			<AccessibilityWidget />
+			<WhatsAppButton />
+			<MobileCtaBar />
+		</LanguageProvider>
+	);
 }
 
 export default App;

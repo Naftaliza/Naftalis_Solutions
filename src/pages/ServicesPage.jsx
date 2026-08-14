@@ -1,154 +1,174 @@
-import React, { useContext } from 'react';
-import { Helmet } from 'react-helmet';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Calendar, MessageCircle, BarChart2, Zap, Settings } from 'lucide-react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { LanguageContext } from '@/context/LanguageContext';
+import { ArrowRight, Calendar, MessageCircle, BarChart2, Check, Settings } from 'lucide-react';
 
-const ServiceCard = ({ icon, title, description, features, index }) => {
-  const { language, translations } = useContext(LanguageContext);
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.15 }}
-      className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col border-t-4 border-teal-500"
-    >
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex-shrink-0 w-16 h-16 bg-slate-100 text-teal-600 rounded-full flex items-center justify-center">
-          {icon}
-        </div>
-        <h3 className="text-2xl font-bold text-slate-800">{title}</h3>
-      </div>
-      <p className="text-slate-600 leading-relaxed mb-6 flex-grow">{description}</p>
-      <ul className="space-y-3 mb-8">
-        {features.map((feature, i) => (
-          <li key={i} className="flex items-center gap-3">
-            <Zap className="w-5 h-5 text-teal-500 flex-shrink-0" />
-            <span className="text-slate-700">{feature}</span>
-          </li>
-        ))}
-      </ul>
-      <Link to="/contact" className="mt-auto">
-        <Button className="w-full bg-slate-800 hover:bg-teal-500 text-white font-semibold shadow-md transition-colors duration-300">
-          {translations.servicesPage.inquireNow} <ArrowRight className={language === 'he' ? 'mr-2' : 'ml-2'} size={16} />
-        </Button>
-      </Link>
-    </motion.div>
-  );
-};
+import Seo from '@/components/Seo';
+import PageHero from '@/components/PageHero';
+import { Button } from '@/components/ui/button';
+import { Card, CardBody, CardIcon } from '@/components/ui/card';
+import { Section, Eyebrow } from '@/components/ui/section';
+import { Reveal, RevealGroup, RevealItem } from '@/components/ui/reveal';
+import { BookingMockup, WhatsAppMockup, DashboardMockup } from '@/components/mockups/ProductMockups';
+import { useLanguage } from '@/context/LanguageContext';
+import { track } from '@/lib/analytics';
+import { SITE_URL } from '@/lib/site-routes';
 
 const ServicesPage = () => {
-  const { language, translations } = useContext(LanguageContext);
-  const t = translations.servicesPage;
+	const { translations, localize, dir } = useLanguage();
+	const t = translations.servicesPage;
 
-  const services = [
-    {
-      icon: <Calendar size={32} aria-hidden="true" />,
-      title: t.cards.scheduling.title,
-      description: t.cards.scheduling.description,
-      features: t.cards.scheduling.features,
-    },
-    {
-      icon: <MessageCircle size={32} aria-hidden="true" />,
-      title: t.cards.whatsapp.title,
-      description: t.cards.whatsapp.description,
-      features: t.cards.whatsapp.features,
-    },
-    {
-      icon: <BarChart2 size={32} aria-hidden="true" />,
-      title: t.cards.dashboards.title,
-      description: t.cards.dashboards.description,
-      features: t.cards.dashboards.features,
-    },
-  ];
+	const services = [
+		{
+			id: 'scheduling',
+			icon: <Calendar size={26} aria-hidden="true" />,
+			visual: <BookingMockup />,
+			...t.cards.scheduling,
+		},
+		{
+			id: 'whatsapp',
+			icon: <MessageCircle size={26} aria-hidden="true" />,
+			visual: <WhatsAppMockup />,
+			...t.cards.whatsapp,
+		},
+		{
+			id: 'dashboards',
+			icon: <BarChart2 size={26} aria-hidden="true" />,
+			visual: <DashboardMockup />,
+			...t.cards.dashboards,
+		},
+	];
 
-  return (
-    <>
-      <Helmet>
-        <title>{t.meta.title}</title>
-        <meta name="description" content={t.meta.description} />
-        <link rel="canonical" href="https://naftalissolutions.com/services" />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://naftalissolutions.com/services" />
-        <meta property="og:title" content={t.meta.title} />
-        <meta property="og:description" content={t.meta.description} />
-      </Helmet>
+	const jsonLd = services.map((service) => ({
+		'@context': 'https://schema.org',
+		'@type': 'Service',
+		name: service.title,
+		description: service.description,
+		provider: { '@type': 'ProfessionalService', name: "Naftali's Solutions", url: SITE_URL },
+		areaServed: { '@type': 'Country', name: 'Israel' },
+	}));
 
-      <div className="space-y-24" dir={language === 'he' ? 'rtl' : 'ltr'}>
-        <motion.section 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="text-center py-20"
-        >
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-4 tracking-tight"
-          >
-            {t.hero.title1} <span className="gradient-text">{t.hero.title2}</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto"
-          >
-            {t.hero.subtitle}
-          </motion.p>
-        </motion.section>
+	return (
+		<>
+			<Seo
+				title={t.meta.title}
+				description={t.meta.description}
+				routePath="/services"
+				jsonLd={jsonLd}
+			/>
 
-        <section>
-          <div className="grid lg:grid-cols-3 gap-10">
-            {services.map((service, index) => (
-              <ServiceCard key={index} index={index} {...service} />
-            ))}
-          </div>
-        </section>
+			<div dir={dir}>
+				<PageHero
+					title1={t.hero.title1}
+					title2={t.hero.title2}
+					subtitle={t.hero.subtitle}
+				/>
 
-        <section className="bg-slate-100 p-12 rounded-2xl flex flex-col md:flex-row items-center gap-12">
-           <motion.div
-            initial={{ opacity: 0, x: language === 'he' ? 50 : -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex-1"
-           >
-            <div className="inline-flex items-center gap-2 bg-teal-100 text-teal-700 font-semibold px-4 py-1 rounded-full mb-4">
-                <Settings size={16} />
-                <span>{t.custom.tag}</span>
-            </div>
-            <h2 className="text-4xl font-bold text-slate-900 mb-4">{t.custom.title}</h2>
-            <p className="text-slate-600 text-lg leading-relaxed mb-8">
-              {t.custom.description}
-            </p>
-            <Link to="/contact">
-              <Button size="lg" className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
-                {t.custom.button}
-              </Button>
-            </Link>
-           </motion.div>
-           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex-1 w-full"
-           >
-              <div
-                role="img"
-                aria-label={t.custom.title}
-                className="relative w-full aspect-square max-w-sm mx-auto rounded-xl shadow-lg bg-gradient-to-br from-teal-500 via-teal-600 to-slate-800 flex items-center justify-center overflow-hidden"
-              >
-                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-                <Settings size={96} className="text-white/90 relative" aria-hidden="true" />
-              </div>
-           </motion.div>
-        </section>
-      </div>
-    </>
-  );
+				{/* Each service gets its own anchor so the homepage cards can deep
+				    link straight to it. `scroll-mt` clears the sticky header. */}
+				<Section spacing="default">
+					<div className="flex flex-col gap-20 sm:gap-28">
+						{services.map((service, i) => (
+							<div
+								key={service.id}
+								id={service.id}
+								className="grid scroll-mt-28 items-center gap-10 lg:grid-cols-2 lg:gap-16"
+							>
+								<Reveal className={i % 2 === 1 ? 'lg:order-last' : undefined}>
+									<CardIcon className="mb-6">{service.icon}</CardIcon>
+									<h2 className="mb-4 text-2xl font-bold text-foreground sm:text-3xl">
+										{service.title}
+									</h2>
+									<p className="mb-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
+										{service.description}
+									</p>
+									<ul className="mb-8 flex flex-col gap-3">
+										{service.features.map((feature) => (
+											<li key={feature} className="flex items-start gap-3">
+												<span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+													<Check size={12} aria-hidden="true" />
+												</span>
+												<span className="text-foreground">{feature}</span>
+											</li>
+										))}
+									</ul>
+									<Link to={localize('/contact')}>
+										<Button
+											onClick={() => track.ctaClick(`service_${service.id}_inquire`, 'services')}
+										>
+											{t.inquireNow}
+											<ArrowRight size={16} className="dir-flip" aria-hidden="true" />
+										</Button>
+									</Link>
+								</Reveal>
+
+								<Reveal delay={0.1} aria-hidden="true">
+									<div className="relative">
+										<div className="absolute -inset-6 -z-10 rounded-full bg-primary/10 blur-3xl" />
+										{service.visual}
+									</div>
+								</Reveal>
+							</div>
+						))}
+					</div>
+				</Section>
+
+				{/* Custom work */}
+				<Section glow className="border-t border-border">
+					<Card variant="glass" className="overflow-hidden">
+						<CardBody className="gap-8 p-8 sm:p-12 lg:flex-row lg:items-center lg:gap-16">
+							<Reveal className="flex-1">
+								<Eyebrow className="mb-5">{t.custom.tag}</Eyebrow>
+								<h2 className="mb-4 text-display-sm font-bold text-foreground">
+									{t.custom.title}
+								</h2>
+								<p className="mb-8 max-w-xl text-lg leading-relaxed text-muted-foreground">
+									{t.custom.description}
+								</p>
+								<Link to={localize('/contact')}>
+									<Button
+										size="lg"
+										onClick={() => track.ctaClick('custom_project', 'services')}
+									>
+										{t.custom.button}
+										<ArrowRight size={18} className="dir-flip" aria-hidden="true" />
+									</Button>
+								</Link>
+							</Reveal>
+
+							<Reveal delay={0.1} className="flex-1" aria-hidden="true">
+								<RevealGroup className="grid grid-cols-2 gap-3">
+									{[
+										'Booking rules',
+										'Payments',
+										'Reminders',
+										'Integrations',
+										'Reporting',
+										'Automations',
+									].map((label, i) => (
+										<RevealItem key={label}>
+											<div
+												className={`flex h-20 items-center justify-center rounded-xl border border-border text-center font-display text-sm font-semibold ${
+													i % 3 === 0
+														? 'bg-primary/12 text-primary'
+														: 'bg-foreground/[0.04] text-muted-foreground'
+												}`}
+											>
+												{label}
+											</div>
+										</RevealItem>
+									))}
+								</RevealGroup>
+								<div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+									<Settings size={15} className="text-primary" aria-hidden="true" />
+									{t.custom.tag}
+								</div>
+							</Reveal>
+						</CardBody>
+					</Card>
+				</Section>
+			</div>
+		</>
+	);
 };
 
 export default ServicesPage;

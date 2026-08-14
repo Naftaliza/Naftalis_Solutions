@@ -1,38 +1,115 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://naftalissolutions.com/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://naftalissolutions.com/he</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://naftalissolutions.com/services</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/services"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he/services"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/services"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://naftalissolutions.com/he/services</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/services"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he/services"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/services"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://naftalissolutions.com/quote</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/quote"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he/quote"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/quote"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://naftalissolutions.com/he/quote</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/quote"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he/quote"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/quote"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://naftalissolutions.com/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/about"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/about"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://naftalissolutions.com/he/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/about"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/about"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://naftalissolutions.com/faq</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/faq"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he/faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/faq"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://naftalissolutions.com/he/faq</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/faq"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he/faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/faq"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://naftalissolutions.com/blog</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/blog"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he/blog"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/blog"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://naftalissolutions.com/he/blog</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/blog"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he/blog"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/blog"/>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://naftalissolutions.com/contact</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://naftalissolutions.com/faq</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://naftalissolutions.com/quote</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/contact"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he/contact"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/contact"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://naftalissolutions.com/services</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://naftalissolutions.com/he/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://naftalissolutions.com/contact"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://naftalissolutions.com/he/contact"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://naftalissolutions.com/contact"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

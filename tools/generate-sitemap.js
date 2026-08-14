@@ -1,68 +1,64 @@
 #!/usr/bin/env node
 
-// Generates public/sitemap.xml from the routes in src/App.jsx, so it can't
-// drift out of sync with the app's actual pages the way a hand-maintained
-// sitemap does.
+// Generates public/sitemap.xml from src/lib/site-routes.js — the same manifest
+// the app itself routes from, so the two cannot drift.
+//
+// Previously this regex-scraped <Route> lines out of App.jsx, which broke as
+// soon as the routing style changed. It also emitted English URLs only; Hebrew
+// now has real URLs under /he/* and each entry carries xhtml:link alternates so
+// search engines can pair the two languages.
 
-import fs from 'fs';
-import path from 'path';
-import { pathToFileURL } from 'url';
-import { extractRoutes } from './lib/routes.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { routes, LANGUAGES, absoluteUrl } from '../src/lib/site-routes.js';
 
-const SITE_URL = 'https://naftalissolutions.com';
+function generateSitemapXml() {
+	const entries = [];
 
-// Routes that exist but shouldn't be indexed: interstitial pages, legal
-// boilerplate, and the catch-all 404 (normalized to "/*" since it doesn't
-// start with a slash in App.jsx's path="*").
-const EXCLUDED_ROUTES = new Set(['/quote-thank-you', '/privacy-policy', '/*']);
+	for (const route of routes) {
+		if (!route.index) continue;
 
-const ROUTE_META = {
-  '/': { changefreq: 'weekly', priority: '1.0' },
-  '/solutions': { changefreq: 'weekly', priority: '1.0' },
-  '/services': { changefreq: 'weekly', priority: '0.9' },
-  '/faq': { changefreq: 'monthly', priority: '0.7' },
-  '/blog': { changefreq: 'weekly', priority: '0.7' },
-  '/about': { changefreq: 'monthly', priority: '0.8' },
-  '/quote': { changefreq: 'monthly', priority: '0.8' },
-  '/contact': { changefreq: 'monthly', priority: '0.7' },
-};
+		for (const language of LANGUAGES) {
+			const alternates = LANGUAGES.map(
+				(alt) =>
+					`    <xhtml:link rel="alternate" hreflang="${alt}" href="${absoluteUrl(route.path, alt)}"/>`,
+			).join('\n');
 
-const DEFAULT_META = { changefreq: 'monthly', priority: '0.5' };
+			entries.push(
+				[
+					'  <url>',
+					`    <loc>${absoluteUrl(route.path, language)}</loc>`,
+					alternates,
+					`    <xhtml:link rel="alternate" hreflang="x-default" href="${absoluteUrl(route.path, 'en')}"/>`,
+					`    <changefreq>${route.changefreq || 'monthly'}</changefreq>`,
+					`    <priority>${route.priority || '0.5'}</priority>`,
+					'  </url>',
+				].join('\n'),
+			);
+		}
+	}
 
-function buildUrls(routes) {
-  const uniquePaths = [...new Set(routes.values())].filter(p => !EXCLUDED_ROUTES.has(p));
-  return uniquePaths.sort().map(routePath => ({
-    loc: `${SITE_URL}${routePath}`,
-    ...(ROUTE_META[routePath] || DEFAULT_META),
-  }));
-}
-
-function generateSitemapXml(urls) {
-  const urlEntries = urls
-    .map(u => `  <url>\n    <loc>${u.loc}</loc>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`)
-    .join('\n');
-
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urlEntries}\n</urlset>\n`;
+	return [
+		'<?xml version="1.0" encoding="UTF-8"?>',
+		'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
+		entries.join('\n'),
+		'</urlset>',
+		'',
+	].join('\n');
 }
 
 function main() {
-  const appJsxPath = path.join(process.cwd(), 'src', 'App.jsx');
-  const routes = extractRoutes(appJsxPath);
-  const urls = buildUrls(routes);
+	const xml = generateSitemapXml();
+	const outputPath = path.join(process.cwd(), 'public', 'sitemap.xml');
+	fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+	fs.writeFileSync(outputPath, xml, 'utf8');
 
-  if (urls.length === 0) {
-    console.error('❌ No indexable routes found in App.jsx!');
-    process.exit(1);
-  }
-
-  const outputPath = path.join(process.cwd(), 'public', 'sitemap.xml');
-  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, generateSitemapXml(urls), 'utf8');
+	const count = (xml.match(/<loc>/g) || []).length;
+	console.log(`  sitemap.xml: ${count} URLs`);
 }
 
-// See generate-llms.js for why this can't be a plain string comparison on Windows.
 const isMainModule = import.meta.url === pathToFileURL(process.argv[1]).href;
-
 if (isMainModule) {
-  main();
+	main();
 }

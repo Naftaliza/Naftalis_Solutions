@@ -1,81 +1,131 @@
-import React, { useContext } from 'react';
-import { Helmet } from 'react-helmet';
-import { motion } from 'framer-motion';
-import { Clock } from 'lucide-react';
-import { LanguageContext } from '@/context/LanguageContext';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Clock, ArrowRight, MessageCircle } from 'lucide-react';
+
+import Seo from '@/components/Seo';
+import PageHero from '@/components/PageHero';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardBody } from '@/components/ui/card';
+import { Section } from '@/components/ui/section';
+import { Reveal } from '@/components/ui/reveal';
+import { useLanguage } from '@/context/LanguageContext';
+import { track } from '@/lib/analytics';
+import { CONTACT } from '@/lib/contact';
+import { SITE_URL, absoluteUrl } from '@/lib/site-routes';
 
 const BlogPage = () => {
-  const { language, translations } = useContext(LanguageContext);
-  const t = translations.blogPage;
+	const { language, translations, localize, dir } = useLanguage();
+	const t = translations.blogPage;
 
-  return (
-    <>
-      <Helmet>
-        <title>{t.meta.title}</title>
-        <meta name="description" content={t.meta.description} />
-        <link rel="canonical" href="https://naftalissolutions.com/blog" />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://naftalissolutions.com/blog" />
-        <meta property="og:title" content={t.meta.title} />
-        <meta property="og:description" content={t.meta.description} />
-      </Helmet>
+	/* BlogPosting markup — the posts had no article schema at all before. */
+	const jsonLd = t.posts.map((post) => ({
+		'@context': 'https://schema.org',
+		'@type': 'BlogPosting',
+		headline: post.title,
+		description: post.excerpt,
+		inLanguage: language,
+		mainEntityOfPage: `${absoluteUrl('/blog', language)}#${post.slug}`,
+		author: { '@type': 'Person', name: 'Naftali' },
+		publisher: {
+			'@type': 'Organization',
+			name: "Naftali's Solutions",
+			logo: { '@type': 'ImageObject', url: `${SITE_URL}/favicon.svg` },
+		},
+	}));
 
-      <div className="space-y-16" dir={language === 'he' ? 'rtl' : 'ltr'}>
-        <motion.section
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="text-center py-20"
-        >
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-4 tracking-tight"
-          >
-            {t.hero.title1} <span className="gradient-text">{t.hero.title2}</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto"
-          >
-            {t.hero.subtitle}
-          </motion.p>
-        </motion.section>
+	return (
+		<>
+			<Seo
+				title={t.meta.title}
+				description={t.meta.description}
+				routePath="/blog"
+				type="article"
+				jsonLd={jsonLd}
+			/>
 
-        <section className="max-w-3xl mx-auto pb-24 space-y-16">
-          {t.posts.map((post, index) => (
-            <motion.article
-              key={post.slug}
-              id={post.slug}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white p-8 sm:p-10 rounded-2xl shadow-lg scroll-mt-24"
-            >
-              <div className="flex items-center gap-2 text-sm text-teal-600 font-medium mb-3">
-                <Clock size={14} aria-hidden="true" />
-                <span>{post.readTime}</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">{post.title}</h2>
-              <p className="text-slate-500 italic mb-6">{post.excerpt}</p>
-              <div className="space-y-5">
-                {post.content.map((block, i) => (
-                  <div key={i}>
-                    {block.heading && <h3 className="text-lg font-semibold text-slate-800 mb-2">{block.heading}</h3>}
-                    <p className="text-slate-600 leading-relaxed">{block.body}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.article>
-          ))}
-        </section>
-      </div>
-    </>
-  );
+			<div dir={dir}>
+				<PageHero title1={t.hero.title1} title2={t.hero.title2} subtitle={t.hero.subtitle} />
+
+				<Section spacing="default">
+					<div className="mx-auto flex max-w-3xl flex-col gap-10">
+						{t.posts.map((post) => (
+							<Reveal as="article" key={post.slug} id={post.slug} className="scroll-mt-28">
+								<Card variant="glass">
+									<CardBody className="gap-5 sm:p-10">
+										<Badge variant="muted" size="sm" className="self-start">
+											<Clock size={12} aria-hidden="true" />
+											{post.readTime}
+										</Badge>
+
+										<h2 className="text-2xl font-bold text-foreground sm:text-3xl">
+											{post.title}
+										</h2>
+										<p className="text-lg italic text-muted-foreground">{post.excerpt}</p>
+
+										<div className="flex flex-col gap-5">
+											{post.content.map((block, i) => (
+												<div key={i} className="flex flex-col gap-2">
+													{block.heading && (
+														<h3 className="font-display text-lg font-semibold text-foreground">
+															{block.heading}
+														</h3>
+													)}
+													<p className="leading-relaxed text-muted-foreground">{block.body}</p>
+												</div>
+											))}
+										</div>
+
+										{/* Each post ends somewhere now — both articles used to
+										    finish with no next step at all. */}
+										<div className="mt-2 flex flex-wrap gap-3 border-t border-border pt-6">
+											<Link to={localize('/contact')}>
+												<Button
+													size="sm"
+													onClick={() => track.ctaClick(`blog_${post.slug}`, 'blog')}
+												>
+													{translations.solutionsPage.finalCta.primary}
+													<ArrowRight size={15} className="dir-flip" aria-hidden="true" />
+												</Button>
+											</Link>
+											<Link to={localize('/services')}>
+												<Button size="sm" variant="outline">
+													{translations.header.services}
+												</Button>
+											</Link>
+										</div>
+									</CardBody>
+								</Card>
+							</Reveal>
+						))}
+					</div>
+				</Section>
+
+				<Section glow spacing="tight" className="border-t border-border">
+					<Reveal className="mx-auto flex max-w-2xl flex-col items-center gap-5 text-center">
+						<h2 className="text-2xl font-bold text-foreground sm:text-3xl">
+							{translations.solutionsPage.finalCta.title}
+						</h2>
+						<p className="text-muted-foreground">
+							{translations.solutionsPage.finalCta.subtitle}
+						</p>
+						<a
+							href={CONTACT.whatsappUrl(translations.whatsappWidget.message)}
+							target="_blank"
+							rel="noopener noreferrer"
+							onClick={() => track.whatsappClick('blog')}
+							className="mt-2"
+						>
+							<Button variant="glass" size="lg">
+								<MessageCircle size={18} aria-hidden="true" />
+								{translations.solutionsPage.finalCta.secondary}
+							</Button>
+						</a>
+					</Reveal>
+				</Section>
+			</div>
+		</>
+	);
 };
 
 export default BlogPage;

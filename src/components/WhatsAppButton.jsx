@@ -1,23 +1,28 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { MessageCircle } from 'lucide-react';
-import { LanguageContext } from '@/context/LanguageContext';
-import { WHATSAPP_NUMBER, WHATSAPP_DEFAULT_MESSAGE } from '@/lib/whatsapp';
+import { useLanguage } from '@/context/LanguageContext';
+import { CONTACT } from '@/lib/contact';
+import { track } from '@/lib/analytics';
 
+/**
+ * Anchored to the inline-start edge, so it mirrors to the right in Hebrew
+ * instead of sitting in the same physical corner in both directions.
+ */
 const WhatsAppButton = () => {
-  const { language, translations } = useContext(LanguageContext);
-  const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_DEFAULT_MESSAGE[language])}`;
+	const { translations } = useLanguage();
 
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={translations.whatsappWidget.ariaLabel}
-      className="fixed bottom-20 md:bottom-6 left-4 z-40 bg-[#25D366] hover:bg-[#1ebe57] text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:ring-offset-2"
-    >
-      <MessageCircle size={28} aria-hidden="true" />
-    </a>
-  );
+	return (
+		<a
+			href={CONTACT.whatsappUrl(translations.whatsappWidget.message)}
+			target="_blank"
+			rel="noopener noreferrer"
+			aria-label={translations.whatsappWidget.ariaLabel}
+			onClick={() => track.whatsappClick('floating_button')}
+			className="fixed bottom-24 start-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-[#04310f] shadow-lift transition-transform duration-300 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 focus-visible:ring-offset-background md:bottom-6"
+		>
+			<MessageCircle size={26} aria-hidden="true" />
+		</a>
+	);
 };
 
 export default WhatsAppButton;

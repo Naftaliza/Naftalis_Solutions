@@ -1,78 +1,141 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Rocket, Mail, Phone, MessageCircle } from 'lucide-react';
-import { LanguageContext } from '@/context/LanguageContext';
-import { WHATSAPP_NUMBER, WHATSAPP_DEFAULT_MESSAGE } from '@/lib/whatsapp';
+import { Mail, Phone, MessageCircle, MapPin, Clock } from 'lucide-react';
+import { Container } from '@/components/ui/section';
+import { BrandLockup } from '@/components/BrandMark';
+import { StatusDot } from '@/components/ui/badge';
+import { useLanguage } from '@/context/LanguageContext';
+import { track } from '@/lib/analytics';
+import { CONTACT } from '@/lib/contact';
 
 const Footer = () => {
-    const { language, translations } = useContext(LanguageContext);
-    const currentYear = new Date().getFullYear();
+	const { translations, localize, dir } = useLanguage();
+	const t = translations.footer;
+	const year = new Date().getFullYear();
 
-    const socialLinks = [
-        { icon: <Mail size={20} />, label: translations.footer.social.email, href: 'mailto:naftalissolutions@gmail.com' },
-        { icon: <Phone size={20} />, label: translations.footer.social.call, href: 'tel:+972527073229' },
-        { icon: <MessageCircle size={20} />, label: translations.footer.social.whatsapp, href: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_DEFAULT_MESSAGE[language])}` },
-    ];
+	const columns = [
+		{
+			heading: t.solutionsHeading,
+			links: [
+				{ to: '/services#scheduling', label: translations.servicesPage.cards.scheduling.title },
+				{ to: '/services#whatsapp', label: translations.servicesPage.cards.whatsapp.title },
+				{ to: '/services#dashboards', label: translations.servicesPage.cards.dashboards.title },
+				{ to: '/quote', label: t.pricing },
+			],
+		},
+		{
+			heading: t.companyHeading,
+			links: [
+				{ to: '/about', label: translations.header.about },
+				{ to: '/faq', label: translations.header.faq },
+				{ to: '/blog', label: t.blog },
+				{ to: '/contact', label: translations.header.contact },
+			],
+		},
+	];
 
-    const footerLinks = [
-        { to: '/about', label: translations.footer.about },
-        { to: '/services', label: translations.footer.services },
-        { to: '/faq', label: translations.footer.faq },
-        { to: '/blog', label: translations.footer.blog },
-        { to: '/contact', label: translations.footer.contact },
-    ];
+	return (
+		<footer dir={dir} className="relative mt-auto border-t border-border bg-card/40">
+			<Container className="py-14 sm:py-16">
+				<div className="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+					{/* Brand */}
+					<div className="flex flex-col gap-5">
+						<NavLink to={localize('/')} aria-label={translations.header.brand}>
+							<BrandLockup label={translations.header.brand} />
+						</NavLink>
+						<p className="max-w-xs leading-relaxed text-muted-foreground">{t.tagline}</p>
+						<p className="flex items-center gap-2 text-sm text-muted-foreground">
+							<MapPin size={15} className="shrink-0 text-primary" aria-hidden="true" />
+							{t.location}
+						</p>
+						<p className="flex items-center gap-2 text-sm font-medium text-foreground">
+							<StatusDot />
+							{t.availability}
+						</p>
+					</div>
 
-    return (
-        <footer className="bg-slate-100 border-t border-slate-200" dir={language === 'he' ? 'rtl' : 'ltr'}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="space-y-4">
-                        <NavLink to="/" className="flex items-center gap-3 text-2xl font-bold text-slate-900">
-                            <Rocket size={28} className="text-teal-500" />
-                            <span>{translations.footer.brand}</span>
-                        </NavLink>
-                        <p className="text-slate-600 max-w-xs">
-                            {translations.footer.tagline}
-                        </p>
-                    </div>
+					{/* Link columns */}
+					{columns.map((column) => (
+						<nav key={column.heading} aria-label={column.heading} className="flex flex-col gap-4">
+							<h2 className="font-display text-sm font-bold uppercase tracking-[0.14em] text-foreground">
+								{column.heading}
+							</h2>
+							<ul className="flex flex-col gap-2.5">
+								{column.links.map((link) => (
+									<li key={link.to}>
+										<NavLink
+											to={localize(link.to)}
+											className="text-sm text-muted-foreground transition-colors hover:text-primary"
+										>
+											{link.label}
+										</NavLink>
+									</li>
+								))}
+							</ul>
+						</nav>
+					))}
 
-                    <div>
-                        <p className="font-semibold text-slate-800 mb-4">{translations.footer.quickLinks}</p>
-                        <ul className="space-y-3">
-                            {footerLinks.map(link => (
-                                <li key={link.to}>
-                                    <NavLink to={link.to} className="text-slate-600 hover:text-teal-500 transition-colors">
-                                        {link.label}
-                                    </NavLink>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    
-                     <div>
-                        <p className="font-semibold text-slate-800 mb-4">{translations.footer.connect}</p>
-                        <div className="flex items-center gap-4">
-                            {socialLinks.map(social => (
-                                <a key={social.label} href={social.href} target={social.href.startsWith('http') ? '_blank' : undefined} rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined} className="text-slate-500 hover:text-teal-500 transition-colors">
-                                    {social.icon}
-                                    <span className="sr-only">{social.label}</span>
-                                </a>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+					{/* Direct contact — real links, not plain text. */}
+					<div className="flex flex-col gap-4">
+						<h2 className="font-display text-sm font-bold uppercase tracking-[0.14em] text-foreground">
+							{t.contactHeading}
+						</h2>
+						<ul className="flex flex-col gap-3">
+							<li>
+								<a
+									href={CONTACT.whatsappUrl(translations.whatsappWidget.message)}
+									target="_blank"
+									rel="noopener noreferrer"
+									onClick={() => track.whatsappClick('footer')}
+									className="group flex items-center gap-3 text-sm text-muted-foreground transition-colors hover:text-primary"
+								>
+									<MessageCircle size={16} className="shrink-0 text-primary" aria-hidden="true" />
+									{t.whatsappLabel}
+								</a>
+							</li>
+							<li>
+								<a
+									href={`tel:${CONTACT.phoneE164}`}
+									onClick={() => track.phoneClick('footer')}
+									dir="ltr"
+									className="flex items-center gap-3 text-sm text-muted-foreground transition-colors hover:text-primary"
+								>
+									<Phone size={16} className="shrink-0 text-primary" aria-hidden="true" />
+									{CONTACT.phoneDisplay}
+								</a>
+							</li>
+							<li>
+								<a
+									href={`mailto:${CONTACT.email}`}
+									onClick={() => track.emailClick('footer')}
+									className="flex items-center gap-3 break-all text-sm text-muted-foreground transition-colors hover:text-primary"
+								>
+									<Mail size={16} className="shrink-0 text-primary" aria-hidden="true" />
+									{CONTACT.email}
+								</a>
+							</li>
+							<li className="flex items-center gap-3 text-sm text-muted-foreground">
+								<Clock size={16} className="shrink-0 text-primary" aria-hidden="true" />
+								{t.hours}
+							</li>
+						</ul>
+					</div>
+				</div>
 
-                <div className="mt-12 pt-8 border-t border-slate-200 text-center text-slate-500 space-y-2">
-                    <p>&copy; {currentYear} {translations.footer.brand}. {translations.footer.rights}</p>
-                    <p>
-                        <NavLink to="/privacy-policy" className="hover:text-teal-500 transition-colors underline">
-                            {translations.footer.privacyPolicy}
-                        </NavLink>
-                    </p>
-                </div>
-            </div>
-        </footer>
-    );
+				<div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
+					<p className="text-sm text-muted-foreground">
+						© {year} {translations.header.brand}. {t.rights}
+					</p>
+					<NavLink
+						to={localize('/privacy-policy')}
+						className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+					>
+						{t.privacy}
+					</NavLink>
+				</div>
+			</Container>
+		</footer>
+	);
 };
 
 export default Footer;

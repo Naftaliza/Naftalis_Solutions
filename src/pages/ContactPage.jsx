@@ -1,285 +1,357 @@
-import React, { useState, useContext, useRef, useEffect } from 'react';
-import { Helmet } from 'react-helmet';
-import { useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
-import { Send, Mail, Phone, MapPin, Loader2 } from 'lucide-react';
-import { LanguageContext } from '@/context/LanguageContext';
+import React, { useState, useRef, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Send, Mail, Phone, MapPin, Loader2, MessageCircle, Clock } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 
+import Seo from '@/components/Seo';
+import PageHero from '@/components/PageHero';
+import { Button } from '@/components/ui/button';
+import { Card, CardBody } from '@/components/ui/card';
+import { Section } from '@/components/ui/section';
+import { Reveal } from '@/components/ui/reveal';
+import { Field, Input, Textarea } from '@/components/ui/field';
+import { Badge, StatusDot } from '@/components/ui/badge';
+import { useToast } from '@/components/ui/use-toast';
+import { useLanguage } from '@/context/LanguageContext';
+import { track } from '@/lib/analytics';
+import { CONTACT } from '@/lib/contact';
+
+const EMPTY = { name: '', email: '', phone: '', subject: '', message: '', company: '' };
+
 const ContactPage = () => {
-  const { toast } = useToast();
-  const { language, translations } = useContext(LanguageContext);
-  const t = translations.contactPage;
-  const form = useRef();
-  const location = useLocation();
-  
-  const [isSending, setIsSending] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '', company: '' });
-  const [errors, setErrors] = useState({});
+	const { toast } = useToast();
+	const { language, translations, localize, dir } = useLanguage();
+	const t = translations.contactPage;
+	const form = useRef();
+	const location = useLocation();
+	const navigate = useNavigate();
 
-  useEffect(() => {
-    if (location.state?.selectedPlan) {
-      const { selectedPlan } = location.state;
-      const plan = selectedPlan.raw;
-      
-      const subject = language === 'he' 
-        ? `בקשת הצעת מחיר: ${plan.name}`
-        : `Quote Request: ${plan.name} Plan`;
+	const [isSending, setIsSending] = useState(false);
+	const [formData, setFormData] = useState(EMPTY);
+	const [errors, setErrors] = useState({});
+	const [hasStarted, setHasStarted] = useState(false);
 
-      const priceInfo = plan.price === 'Custom' || plan.price === 'מותאם'
-        ? (language === 'he' ? 'מחיר מותאם אישית' : 'Custom Pricing')
-        : `${plan.price}${plan.period}`;
+	const selectedPlan = location.state?.selectedPlan;
 
-      const messageBody = language === 'he'
-? `שלום,
+	/* Prefill from a chosen plan. The plan object now comes straight from
+	   translations — there is no separate `raw` copy to fall out of sync. */
+	useEffect(() => {
+		if (!selectedPlan) return;
 
-אני מעוניין/ת בתוכנית "${plan.name}".
+		const subject =
+			language === 'he'
+				? `בקשת הצעת מחיר: ${selectedPlan.name}`
+				: `Quote Request: ${selectedPlan.name} Plan`;
 
-פרטי התוכנית:
-מחיר: ${priceInfo}
-פיצ'רים כלולים:
-- ${plan.features.join('\n- ')}
+		const priceInfo = /\d/.test(selectedPlan.price)
+			? `${selectedPlan.price}${selectedPlan.period}`
+			: language === 'he'
+				? 'מחיר מותאם אישית'
+				: 'Custom pricing';
 
-אשמח לקבל מידע נוסף.
+		const messageBody =
+			language === 'he'
+				? `שלום,\n\nאני מעוניין/ת בחבילת "${selectedPlan.name}" (${priceInfo}).\n\nספרו לי קצת על העסק שלכם:\n`
+				: `Hello,\n\nI'm interested in the "${selectedPlan.name}" plan (${priceInfo}).\n\nA little about my business:\n`;
 
-תודה,
-`
-: `Hello,
+		setFormData((prev) => ({ ...prev, subject, message: messageBody }));
+	}, [selectedPlan, language]);
 
-I am interested in the "${plan.name}" plan.
+	const handleInputChange = (e) => {
+		const { name, value } = e.target;
+		setFormData((prev) => ({ ...prev, [name]: value }));
+		if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
 
-Plan Details:
-Price: ${priceInfo}
-Features included:
-- ${plan.features.join('\n- ')}
+		if (!hasStarted) {
+			setHasStarted(true);
+			track.formStarted(selectedPlan ? 'quote_plan' : 'contact_direct');
+		}
+	};
 
-I would like to receive more information.
+	const validate = () => {
+		const newErrors = {};
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-Thanks,
-`;
+		if (!formData.name.trim()) newErrors.name = t.form.errors.nameRequired;
+		if (!formData.email.trim()) {
+			newErrors.email = t.form.errors.emailRequired;
+		} else if (!emailRegex.test(formData.email.trim())) {
+			newErrors.email = t.form.errors.emailInvalid;
+		}
+		if (!formData.subject.trim()) newErrors.subject = t.form.errors.subjectRequired;
+		if (!formData.message.trim()) newErrors.message = t.form.errors.messageRequired;
 
-      setFormData(prev => ({
-        ...prev,
-        subject: subject,
-        message: messageBody,
-      }));
-    }
-  }, [location.state, language]);
+		setErrors(newErrors);
 
+		// Move focus to the first problem so the error is actually announced.
+		const firstError = Object.keys(newErrors)[0];
+		if (firstError) {
+			document.getElementById(firstError)?.focus();
+		}
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
-    }
-  };
+		return Object.keys(newErrors).length === 0;
+	};
 
-  const validate = () => {
-    const newErrors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	const handleSubmit = (e) => {
+		e.preventDefault();
 
-    if (!formData.name.trim()) newErrors.name = t.form.errors.nameRequired;
-    if (!formData.email.trim()) {
-      newErrors.email = t.form.errors.emailRequired;
-    } else if (!emailRegex.test(formData.email.trim())) {
-      newErrors.email = t.form.errors.emailInvalid;
-    }
-    if (!formData.subject.trim()) newErrors.subject = t.form.errors.subjectRequired;
-    if (!formData.message.trim()) newErrors.message = t.form.errors.messageRequired;
+		// Honeypot: only bots tend to fill this in.
+		if (formData.company) return;
+		if (!validate()) return;
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+		setIsSending(true);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+		const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+		const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+		const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
-    // Honeypot: if this hidden field got filled, it was a bot — silently drop the submission.
-    if (formData.company) {
-      return;
-    }
+		const isPlaceholder = (value, placeholder) => !value || value === placeholder;
 
-    if (!validate()) {
-      return;
-    }
+		if (
+			isPlaceholder(serviceId, 'YOUR_SERVICE_ID') ||
+			isPlaceholder(templateId, 'YOUR_TEMPLATE_ID') ||
+			isPlaceholder(publicKey, 'YOUR_PUBLIC_KEY')
+		) {
+			// Translated, and phrased for a customer rather than leaking setup
+			// instructions. The old copy was English-only and mentioned EmailJS.
+			toast({
+				variant: 'destructive',
+				title: t.toast.unavailableTitle,
+				description: t.toast.unavailableDescription,
+			});
+			track.leadFailed('contact_form', 'not_configured');
+			setIsSending(false);
+			return;
+		}
 
-    setIsSending(true);
+		const fullMessage =
+			language === 'he'
+				? `שם: ${formData.name}\nאימייל: ${formData.email}\nטלפון: ${formData.phone || '—'}\n\n${formData.message}`
+				: `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone || '—'}\n\n${formData.message}`;
 
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-    
-    if (!serviceId || !templateId || !publicKey || serviceId === 'YOUR_SERVICE_ID' || templateId === 'YOUR_TEMPLATE_ID' || publicKey === 'YOUR_PUBLIC_KEY') {
-        toast({
-            variant: "destructive",
-            title: "EmailJS Not Configured!",
-            description: "Please follow the setup instructions to enable email sending.",
-        });
-        setIsSending(false);
-        return;
-    }
+		emailjs
+			.send(
+				serviceId,
+				templateId,
+				{
+					from_name: formData.name,
+					from_email: formData.email,
+					phone: formData.phone,
+					subject: formData.subject,
+					message: fullMessage,
+				},
+				publicKey,
+			)
+			.then(
+				() => {
+					track.leadSubmitted('contact_form', selectedPlan?.name);
+					setFormData(EMPTY);
+					setErrors({});
+					// Confirmation now happens after the lead exists, not before.
+					navigate(localize('/quote-thank-you'), {
+						state: { leadSubmitted: true, planName: selectedPlan?.name },
+					});
+				},
+				(error) => {
+					console.error('Contact form send failed:', error?.text || error);
+					track.leadFailed('contact_form', 'send_error');
+					toast({
+						variant: 'destructive',
+						title: t.toast.errorTitle,
+						description: t.toast.errorDescription,
+					});
+				},
+			)
+			.finally(() => setIsSending(false));
+	};
 
-    const fullMessage = language === 'he'
-      ? `שם: ${formData.name}\nאימייל: ${formData.email}\nטלפון: ${formData.phone || '—'}\n\n${formData.message}`
-      : `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone || '—'}\n\n${formData.message}`;
+	const contactMethods = [
+		{
+			icon: MessageCircle,
+			label: translations.footer.whatsappLabel,
+			value: CONTACT.phoneDisplay,
+			href: CONTACT.whatsappUrl(translations.whatsappWidget.message),
+			external: true,
+			onClick: () => track.whatsappClick('contact_page'),
+		},
+		{
+			icon: Phone,
+			label: t.info.call.label,
+			value: CONTACT.phoneDisplay,
+			href: `tel:${CONTACT.phoneE164}`,
+			onClick: () => track.phoneClick('contact_page'),
+		},
+		{
+			icon: Mail,
+			label: t.info.email.label,
+			value: CONTACT.email,
+			href: `mailto:${CONTACT.email}`,
+			onClick: () => track.emailClick('contact_page'),
+		},
+	];
 
-    const emailJsData = {
-      from_name: formData.name,
-      from_email: formData.email,
-      phone: formData.phone,
-      subject: formData.subject,
-      message: fullMessage,
-    };
+	return (
+		<>
+			<Seo title={t.meta.title} description={t.meta.description} routePath="/contact" />
 
-    emailjs.send(serviceId, templateId, emailJsData, publicKey)
-      .then((result) => {
-          console.log(result.text);
-          toast({
-            title: t.toast.title,
-            description: t.toast.description,
-          });
-          setFormData({ name: '', email: '', phone: '', subject: '', message: '', company: '' });
-          setErrors({});
-      }, (error) => {
-          console.log(error.text);
-          toast({
-            variant: "destructive",
-            title: "Oops! Something went wrong.",
-            description: "Failed to send message. Please try again later.",
-          });
-      })
-      .finally(() => {
-        setIsSending(false);
-      });
-  };
+			<div dir={dir}>
+				<PageHero title1={t.hero.title1} title2={t.hero.title2} subtitle={t.hero.subtitle} />
 
-  const contactInfo = [
-    { icon: <Mail size={24} className="text-teal-500" />, label: t.info.email.label, value: 'naftalissolutions@gmail.com' },
-    { icon: <Phone size={24} className="text-teal-500" />, label: t.info.call.label, value: '052-7073229' },
-    { icon: <MapPin size={24} className="text-teal-500" />, label: t.info.location.label, value: t.info.location.value },
-  ];
+				<Section spacing="default">
+					<div className="grid items-start gap-10 lg:grid-cols-[1.25fr_0.75fr] lg:gap-14">
+						{/* Form */}
+						<Reveal>
+							<Card variant="glass">
+								<CardBody className="gap-6">
+									<div className="flex flex-wrap items-center justify-between gap-3">
+										<h2 className="text-2xl font-bold text-foreground">{t.form.title}</h2>
+										{selectedPlan && (
+											<Badge variant="default">{selectedPlan.name}</Badge>
+										)}
+									</div>
 
-  return (
-    <>
-      <Helmet>
-        <title>{t.meta.title}</title>
-        <meta name="description" content={t.meta.description} />
-        <link rel="canonical" href="https://naftalissolutions.com/contact" />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://naftalissolutions.com/contact" />
-        <meta property="og:title" content={t.meta.title} />
-        <meta property="og:description" content={t.meta.description} />
-      </Helmet>
+									<form ref={form} onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
+										{/* Honeypot — sr-only rather than a negative offset, which
+										    could land inside the viewport in RTL. */}
+										<div className="sr-only" aria-hidden="true">
+											<label htmlFor="company">Company</label>
+											<input
+												type="text"
+												name="company"
+												id="company"
+												tabIndex="-1"
+												autoComplete="off"
+												value={formData.company}
+												onChange={handleInputChange}
+											/>
+										</div>
 
-      <div className="space-y-24" dir={language === 'he' ? 'rtl' : 'ltr'}>
-        <motion.section 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="text-center py-20"
-        >
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-4 tracking-tight"
-          >
-            {t.hero.title1} <span className="gradient-text">{t.hero.title2}</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto"
-          >
-            {t.hero.subtitle}
-          </motion.p>
-        </motion.section>
+										<div className="grid gap-5 sm:grid-cols-2">
+											<Field id="name" label={t.form.name} error={errors.name} required>
+												<Input
+													name="name"
+													autoComplete="name"
+													value={formData.name}
+													onChange={handleInputChange}
+												/>
+											</Field>
+											<Field id="email" label={t.form.email} error={errors.email} required>
+												<Input
+													type="email"
+													name="email"
+													autoComplete="email"
+													dir="ltr"
+													value={formData.email}
+													onChange={handleInputChange}
+												/>
+											</Field>
+										</div>
 
-        <section className="grid lg:grid-cols-2 gap-16 items-start">
-          <motion.div
-            initial={{ opacity: 0, x: language === 'he' ? 50 : -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white p-8 sm:p-12 rounded-2xl shadow-2xl"
-          >
-            <h2 className="text-3xl font-bold text-slate-900 mb-8">{t.form.title}</h2>
-            <form ref={form} onSubmit={handleSubmit} className="space-y-6" noValidate>
-              {/* Honeypot field — hidden from sighted users, only bots tend to fill it in */}
-              <div className="absolute left-[-9999px] top-auto w-px h-px overflow-hidden" aria-hidden="true">
-                <label htmlFor="company">Company</label>
-                <input type="text" name="company" id="company" tabIndex="-1" autoComplete="off" value={formData.company} onChange={handleInputChange} />
-              </div>
+										<Field id="phone" label={t.form.phone}>
+											<Input
+												type="tel"
+												name="phone"
+												autoComplete="tel"
+												dir="ltr"
+												value={formData.phone}
+												onChange={handleInputChange}
+											/>
+										</Field>
 
-              <div className="grid sm:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">{t.form.name}</label>
-                  <input type="text" name="name" id="name" value={formData.name} onChange={handleInputChange} aria-invalid={!!errors.name} className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"/>
-                  {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">{t.form.email}</label>
-                  <input type="email" name="email" id="email" value={formData.email} onChange={handleInputChange} aria-invalid={!!errors.email} className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"/>
-                  {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
-                </div>
-              </div>
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">{t.form.phone}</label>
-                <input type="tel" name="phone" id="phone" value={formData.phone} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"/>
-              </div>
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-slate-700 mb-2">{t.form.subject}</label>
-                <input type="text" name="subject" id="subject" value={formData.subject} onChange={handleInputChange} aria-invalid={!!errors.subject} className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"/>
-                {errors.subject && <p className="text-sm text-red-500 mt-1">{errors.subject}</p>}
-              </div>
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-2">{t.form.message}</label>
-                <textarea name="message" id="message" rows="8" value={formData.message} onChange={handleInputChange} aria-invalid={!!errors.message} className="w-full px-4 py-3 bg-slate-100 border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition"></textarea>
-                {errors.message && <p className="text-sm text-red-500 mt-1">{errors.message}</p>}
-              </div>
-              <div>
-                <Button type="submit" size="lg" className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-300" disabled={isSending}>
-                  {isSending ? (
-                    <Loader2 className="animate-spin h-5 w-5" />
-                  ) : (
-                    <>
-                      <Send className={language === 'he' ? 'ml-2' : 'mr-2'} size={20} /> {t.form.button}
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
-          </motion.div>
+										<Field id="subject" label={t.form.subject} error={errors.subject} required>
+											<Input
+												name="subject"
+												value={formData.subject}
+												onChange={handleInputChange}
+											/>
+										</Field>
 
-          <motion.div
-            initial={{ opacity: 0, x: language === 'he' ? -50 : 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="space-y-8"
-          >
-            <h2 className="text-3xl font-bold text-slate-900">{t.info.title}</h2>
-            <div className="space-y-6">
-              {contactInfo.map((info, index) => (
-                <div key={index} className="flex items-start gap-5">
-                  <div className="flex-shrink-0 w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center">
-                    {info.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-800 text-lg">{info.label}</h3>
-                    <p className="text-slate-600">{info.value}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-          </motion.div>
-        </section>
-      </div>
-    </>
-  );
+										<Field id="message" label={t.form.message} error={errors.message} required>
+											<Textarea
+												name="message"
+												rows="7"
+												value={formData.message}
+												onChange={handleInputChange}
+											/>
+										</Field>
+
+										<Button type="submit" size="lg" className="w-full" disabled={isSending}>
+											{isSending ? (
+												<>
+													<Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+													<span className="sr-only">…</span>
+												</>
+											) : (
+												<>
+													<Send size={18} className="dir-flip" aria-hidden="true" />
+													{t.form.button}
+												</>
+											)}
+										</Button>
+									</form>
+								</CardBody>
+							</Card>
+						</Reveal>
+
+						{/* Direct contact — every one of these is a real link now. The
+						    old page rendered the phone number and email as plain text. */}
+						<Reveal delay={0.1} className="flex flex-col gap-6">
+							<Card variant="solid">
+								<CardBody className="gap-6">
+									<h2 className="text-xl font-bold text-foreground">{t.info.title}</h2>
+
+									<ul className="flex flex-col gap-3">
+										{contactMethods.map((method) => (
+											<li key={method.label}>
+												<a
+													href={method.href}
+													onClick={method.onClick}
+													{...(method.external
+														? { target: '_blank', rel: 'noopener noreferrer' }
+														: {})}
+													className="group flex items-center gap-4 rounded-xl border border-border p-4 transition-colors hover:border-primary/40 hover:bg-primary/5"
+												>
+													<span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-primary/25 bg-primary/12 text-primary">
+														<method.icon size={19} aria-hidden="true" />
+													</span>
+													<span className="min-w-0">
+														<span className="block font-display text-sm font-semibold text-foreground">
+															{method.label}
+														</span>
+														<span
+															className="block truncate text-sm text-muted-foreground"
+															dir="ltr"
+														>
+															{method.value}
+														</span>
+													</span>
+												</a>
+											</li>
+										))}
+									</ul>
+
+									<div className="flex flex-col gap-3 border-t border-border pt-5 text-sm text-muted-foreground">
+										<p className="flex items-center gap-2.5">
+											<MapPin size={15} className="shrink-0 text-primary" aria-hidden="true" />
+											{t.info.location.value}
+										</p>
+										<p className="flex items-center gap-2.5">
+											<Clock size={15} className="shrink-0 text-primary" aria-hidden="true" />
+											{translations.footer.hours}
+										</p>
+										<p className="flex items-center gap-2.5 font-medium text-foreground">
+											<StatusDot />
+											{translations.footer.availability}
+										</p>
+									</div>
+								</CardBody>
+							</Card>
+						</Reveal>
+					</div>
+				</Section>
+			</div>
+		</>
+	);
 };
 
 export default ContactPage;

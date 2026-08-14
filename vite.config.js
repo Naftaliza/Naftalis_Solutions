@@ -235,9 +235,20 @@ logger.error = (msg, options) => {
 export default defineConfig({
 	customLogger: logger,
 	plugins: [
-		...(isDev ? [inlineEditPlugin(), editModeDevPlugin(), iframeRouteRestorationPlugin()] : []),
+		...(isDev
+			? [
+				inlineEditPlugin(),
+				editModeDevPlugin(),
+				iframeRouteRestorationPlugin(),
+				// Gated to dev alongside the other Horizons plugins. These
+				// injected scripts override console.error, monkey-patch
+				// window.fetch and postMessage error details to window.parent
+				// with a '*' target origin — useful inside the embedded editor
+				// preview, but they were shipping to production visitors too.
+				addTransformIndexHtml,
+			]
+			: []),
 		react(),
-		addTransformIndexHtml
 	],
 	server: {
 		cors: true,

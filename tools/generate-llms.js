@@ -1,82 +1,67 @@
 #!/usr/bin/env node
 
-// Generates public/llms.txt from the routes in src/App.jsx and the matching
-// meta title/description in src/lib/translations.js (English copy).
-//
-// Note: this used to regex-scrape <title>/<meta> text straight out of each
-// page's <Helmet> block, but every page's title/description is a JSX
-// expression like {t.meta.title} — the old cleaning step stripped JSX
-// expressions as noise before extraction, so it always produced
-// "Untitled Page". Reading translations.js directly avoids that entirely.
+// Generates public/llms.txt from src/lib/site-routes.js plus each page's meta
+// in src/lib/translations.js, so LLM crawlers get a clean index of the site.
 
-import fs from 'fs';
-import path from 'path';
-import { pathToFileURL } from 'url';
-import { extractRoutes } from './lib/routes.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { routes, SITE_URL, absoluteUrl } from '../src/lib/site-routes.js';
 import translations from '../src/lib/translations.js';
 
-// Maps the component name used in <Route element={<X />}> to its section
-// key in translations.js. Pages not listed here (e.g. NotFoundPage) are
-// intentionally excluded — they're not real, indexable content.
-const PAGE_TRANSLATION_KEY = {
-  SolutionsPage: 'solutionsPage',
-  AboutPage: 'aboutPage',
-  ServicesPage: 'servicesPage',
-  ContactPage: 'contactPage',
-  QuotePage: 'quotePage',
-  FAQPage: 'faqPage',
-  BlogPage: 'blogPage',
-  PrivacyPolicyPage: 'privacyPolicyPage',
-};
-
-function buildPages(routes) {
-  const pages = [];
-
-  for (const [componentName, translationKey] of Object.entries(PAGE_TRANSLATION_KEY)) {
-    const routePath = routes.get(componentName);
-    const meta = translations.en[translationKey]?.meta;
-
-    if (!routePath || !meta) continue;
-
-    pages.push({
-      url: routePath,
-      title: meta.title,
-      description: meta.description,
-    });
-  }
-
-  return pages;
+function buildPages() {
+	return routes
+		.filter((route) => route.index)
+		.map((route) => {
+			const meta = translations.en[route.translationKey]?.meta;
+			if (!meta) return null;
+			return {
+				url: absoluteUrl(route.path, 'en'),
+				heUrl: absoluteUrl(route.path, 'he'),
+				title: meta.title,
+				description: meta.description,
+			};
+		})
+		.filter(Boolean);
 }
 
 function generateLlmsTxt(pages) {
-  const sortedPages = [...pages].sort((a, b) => a.title.localeCompare(b.title));
-  const pageEntries = sortedPages
-    .map(page => `- [${page.title}](${page.url}): ${page.description}`)
-    .join('\n');
+	const sorted = [...pages].sort((a, b) => a.title.localeCompare(b.title));
 
-  return `## Pages\n${pageEntries}\n`;
+	return [
+		"# Naftali's Solutions",
+		'',
+		'> Appointment scheduling, WhatsApp Business automation and custom dashboards',
+		'> for small businesses in Israel. Published pricing, no lock-in contract,',
+		'> built and supported by one person.',
+		'',
+		`Site: ${SITE_URL}`,
+		'Languages: English (default), Hebrew (under /he/)',
+		'',
+		'## Pages',
+		...sorted.map((page) => `- [${page.title}](${page.url}): ${page.description}`),
+		'',
+		'## Hebrew',
+		...sorted.map((page) => `- ${page.heUrl}`),
+		'',
+	].join('\n');
 }
 
 function main() {
-  const appJsxPath = path.join(process.cwd(), 'src', 'App.jsx');
-  const routes = extractRoutes(appJsxPath);
-  const pages = buildPages(routes);
+	const pages = buildPages();
 
-  if (pages.length === 0) {
-    console.error('❌ No pages resolved from routes + translations.js!');
-    process.exit(1);
-  }
+	if (pages.length === 0) {
+		console.error('generate-llms: no pages resolved from site-routes + translations');
+		process.exit(1);
+	}
 
-  const outputPath = path.join(process.cwd(), 'public', 'llms.txt');
-  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, generateLlmsTxt(pages), 'utf8');
+	const outputPath = path.join(process.cwd(), 'public', 'llms.txt');
+	fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+	fs.writeFileSync(outputPath, generateLlmsTxt(pages), 'utf8');
+	console.log(`  llms.txt: ${pages.length} pages`);
 }
 
-// A plain `file://${process.argv[1]}` comparison breaks on Windows, where
-// process.argv[1] uses backslashes and import.meta.url is a proper
-// file:// URL — they'd never match, so main() would silently never run.
 const isMainModule = import.meta.url === pathToFileURL(process.argv[1]).href;
-
 if (isMainModule) {
-  main();
+	main();
 }

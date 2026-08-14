@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Naftali's Solutions">
+  <defs>
+    <linearGradient id="a" x1="4" y1="26" x2="27" y2="7" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2DD4BF"/>
+      <stop offset="1" stop-color="#38BDF8"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="#080D14"/>
+  <path d="M6.5 22.5C10 22.5 12.5 19 15 14.5S20.5 6.5 25.5 6.5"
+        fill="none" stroke="url(#a)" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="25.5" cy="6.5" r="3.2" fill="#38BDF8"/>
+</svg>

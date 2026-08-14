@@ -1,8 +1,28 @@
 [build]
-  command = "node tools/generate-llms.js || true && node ./node_modules/vite/bin/vite.js build"
+  # Runs the full pipeline: metadata generators, client bundle, SSR bundle, then
+  # prerender. The previous command ran only generate-llms.js and skipped
+  # generate-sitemap.js entirely, so production shipped a stale sitemap.
+  command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  NODE_VERSION = "20.19.1"
+
+# Fallback only. Netlify serves a matching static file before applying a
+# non-forced rewrite, so the prerendered /services/index.html, /he/index.html
+# and friends are served as-is; this catches anything else and lets the SPA
+# render its 404.
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

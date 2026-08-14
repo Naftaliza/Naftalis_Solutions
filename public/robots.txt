@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
 
+# Interstitials and legal boilerplate — no value in the index.
+Disallow: /quote-thank-you
+Disallow: /he/quote-thank-you
+Disallow: /privacy-policy
+Disallow: /he/privacy-policy
+
 Sitemap: https://naftalissolutions.com/sitemap.xml
